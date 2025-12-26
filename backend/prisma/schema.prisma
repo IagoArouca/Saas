@@ -29,12 +29,13 @@ model User {
 }
 
 model Profile {
-  id        String  @id @default(uuid())
-  bio       String?
-  avatar    String?
-  youtube   String? 
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String  @unique
+  id           String  @id @default(uuid())
+  bio          String?
+  avatar       String?
+  youtube      String? 
+  technologies String[]
+  user         User    @relation(fields: [userId], references: [id])
+  userId       String  @unique
 }
 
 model VideoContent {
