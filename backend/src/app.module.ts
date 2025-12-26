@@ -9,9 +9,11 @@ import { ProjectsModule } from './projects/projects.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { RecruitersModule } from './recruiters/recruiters.module';
 import { ChatModule } from './chat/chat.module';
+import { ProductivityModule } from './productivity/productivity.module';
+import { CreatorsModule } from './creators/creators.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, ProfilesModule, ProjectsModule, ScheduleModule, RecruitersModule, ChatModule],
+  imports: [PrismaModule, UsersModule, AuthModule, ProfilesModule, ProjectsModule, ScheduleModule, RecruitersModule, ChatModule, ProductivityModule, CreatorsModule],
   controllers: [AppController],
   providers: [AppService],
 })

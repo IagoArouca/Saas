@@ -24,6 +24,7 @@ model User {
   videos    VideoContent[] 
   projects Project[]
   studySchedules StudySchedule[]
+  focusSessions FocusSession[]
   
   sentMessages     Message[]      @relation("SentMessages")
   receivedMessages Message[]      @relation("ReceivedMessages")
@@ -89,6 +90,15 @@ model StudySchedule {
   endTime     String  
   subject     String  
   description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model FocusSession {
+  id          String   @id @default(uuid())
+  duration    Int      
+  subject     String?  
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   createdAt   DateTime @default(now())
