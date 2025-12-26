@@ -22,6 +22,7 @@ model User {
   
   profile   Profile?
   videos    VideoContent[] 
+  projects Project[]
   
   sentMessages     Message[]      @relation("SentMessages")
   receivedMessages Message[]      @relation("ReceivedMessages")
@@ -65,3 +66,18 @@ model Message {
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id])
 }
+
+model Project {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  githubUrl   String?
+  deployUrl   String?
+  status      String   @default("EM_DESENVOLVIMENTO") 
+  technologies String[] 
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
