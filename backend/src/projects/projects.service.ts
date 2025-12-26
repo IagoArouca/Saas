@@ -1,4 +1,3 @@
-// src/projects/projects.service.ts
 import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -6,7 +5,6 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
-  // Criar projeto vinculado ao Dev logado
   async create(userId: string, data: any) {
     return this.prisma.project.create({
       data: {

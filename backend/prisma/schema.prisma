@@ -23,6 +23,7 @@ model User {
   profile   Profile?
   videos    VideoContent[] 
   projects Project[]
+  studySchedules StudySchedule[]
   
   sentMessages     Message[]      @relation("SentMessages")
   receivedMessages Message[]      @relation("ReceivedMessages")
@@ -81,3 +82,14 @@ model Project {
   updatedAt   DateTime @updatedAt
 }
 
+model StudySchedule {
+  id          String   @id @default(uuid())
+  dayOfWeek   Int     
+  startTime   String  
+  endTime     String  
+  subject     String  
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+}
