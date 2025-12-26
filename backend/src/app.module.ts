@@ -11,9 +11,10 @@ import { RecruitersModule } from './recruiters/recruiters.module';
 import { ChatModule } from './chat/chat.module';
 import { ProductivityModule } from './productivity/productivity.module';
 import { CreatorsModule } from './creators/creators.module';
+import { ToolsModule } from './tools/tools.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, ProfilesModule, ProjectsModule, ScheduleModule, RecruitersModule, ChatModule, ProductivityModule, CreatorsModule],
+  imports: [PrismaModule, UsersModule, AuthModule, ProfilesModule, ProjectsModule, ScheduleModule, RecruitersModule, ChatModule, ProductivityModule, CreatorsModule, ToolsModule],
   controllers: [AppController],
   providers: [AppService],
 })
