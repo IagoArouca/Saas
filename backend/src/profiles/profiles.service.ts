@@ -30,4 +30,17 @@ export class ProfilesService {
             include: { user: { select: { email: true, role: true } } }
         });
     }
+
+    async findPublicProfile(username: string) {
+  const profile = await this.prisma.profile.findUnique({
+    where: { username }, 
+    include: {
+      user: { select: { role: true } },
+      projects: true,
+    },
+  });
+
+  if (!profile) throw new NotFoundException('Perfil não encontrado');
+  return profile;
+}
 }

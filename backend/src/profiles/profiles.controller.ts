@@ -18,4 +18,9 @@ export class ProfilesController {
     async updateProfile(@Request() req: any, @Body() updateData: any) {
         return this.profilesService.update(req.user.userId, updateData);
     }
+
+    @Get('public/:username')
+    async getPublic(@Param('username') username: string) {
+        return this.profilesService.findPublicProfile(username);
+}
 }

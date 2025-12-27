@@ -25,6 +25,7 @@ model User {
   projects Project[]
   studySchedules StudySchedule[]
   focusSessions FocusSession[]
+  toolLinks ToolLink[]
   
   sentMessages     Message[]      @relation("SentMessages")
   receivedMessages Message[]      @relation("ReceivedMessages")
@@ -33,6 +34,8 @@ model User {
 
 model Profile {
   id           String  @id @default(uuid())
+  username     String   @unique
+  fullName     String?
   bio          String?
   avatar       String?
   youtube      String? 
