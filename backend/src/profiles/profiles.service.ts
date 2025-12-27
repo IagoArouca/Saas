@@ -36,16 +36,18 @@ export class ProfilesService {
         });
     }
 
-    async findPublicProfile(username: string) {
-  const profile = await this.prisma.profile.findUnique({
-    where: { username }, 
-    include: {
-      user: { select: { role: true } },
-      projects: true,
-    },
-  });
+    async findPublicProfile(username: string, ip: string) {
+        const profile = await this.prisma.profile.findUnique({
+            where: { username },
+            include: { projects: true }
+        });
 
-  if (!profile) throw new NotFoundException('Perfil não encontrado');
-  return profile;
-}
+        if (profile) {
+            this.prisma.profileVisit.create({
+            data: { profileId: profile.id, ip }
+            }).catch(e => console.error(e));
+        }
+        
+        return profile;
+    }
 }
