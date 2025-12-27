@@ -12,7 +12,6 @@ export class AnalyticsService {
 
     const sevenDaysAgo = subDays(new Date(), 7);
 
-    // Busca todas as visitas da última semana
     const visits = await this.prisma.profileVisit.findMany({
       where: {
         profileId: profile.id,
@@ -21,22 +20,20 @@ export class AnalyticsService {
       orderBy: { createdAt: 'asc' }
     });
 
-    // Agrupa visitas por dia
     const statsMap = new Map();
     visits.forEach(v => {
       const dateKey = format(v.createdAt, 'dd/MM');
       statsMap.set(dateKey, (statsMap.get(dateKey) || 0) + 1);
     });
+    const chartData: { name: string; views: number }[] = [];
 
-    // Monta o array final garantindo que todos os 7 dias apareçam (mesmo com 0)
-    const chartData = [];
-    for (let i = 6; i >= 0; i--) {
-      const dateLabel = format(subDays(new Date(), i), 'dd/MM');
-      chartData.push({
-        name: dateLabel, // Nome para o eixo X do gráfico
-        views: statsMap.get(dateLabel) || 0,
-      });
-    }
+      for (let i = 6; i >= 0; i--) {
+        const dateLabel = format(subDays(new Date(), i), 'dd/MM');
+        chartData.push({
+          name: dateLabel, 
+          views: statsMap.get(dateLabel) || 0,
+        });
+      }
 
     return {
       total: visits.length,
