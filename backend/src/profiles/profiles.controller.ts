@@ -1,6 +1,15 @@
-import { Controller, Put, Get, Body, UseGuards, Request } from '@nestjs/common';
+import { 
+  Controller, 
+  Put, 
+  Get, 
+  Body, 
+  UseGuards, 
+  Request, 
+  Param, 
+  Ip 
+} from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard;
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 
 @Controller('profiles')
@@ -20,7 +29,7 @@ export class ProfilesController {
     }
 
     @Get('public/:username')
-    async getPublic(@Param('username') username: string) {
-        return this.profilesService.findPublicProfile(username);
-}
+    async getPublic(@Param('username') username: string, @Ip() ip: string) {
+    return this.profilesService.findPublicProfile(username, ip);
+  }
 }
