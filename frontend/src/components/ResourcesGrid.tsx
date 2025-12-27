@@ -1,4 +1,4 @@
-import { ExternalLink, BookmarkPlus, Folder } from 'lucide-react';
+import { ExternalLink, BookmarkPlus } from 'lucide-react';
 
 export const ResourcesGrid = () => {
   const resources = [
