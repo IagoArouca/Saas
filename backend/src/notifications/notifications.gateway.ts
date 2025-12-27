@@ -1,3 +1,4 @@
+
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -15,6 +16,10 @@ import { Server, Socket } from 'socket.io';
 export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
+
+  sendNotification(userId: string, data: any) {
+    this.server.to(userId).emit('newMessage', data); 
+  }
 
   handleConnection(client: Socket) {
     const userId = client.handshake.query.userId as string;
