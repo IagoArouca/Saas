@@ -39,4 +39,24 @@ export class ProjectsService {
 
     return this.prisma.project.delete({ where: { id: projectId } });
   }
+
+  async explore(tech?: string) {
+  return this.prisma.project.findMany({
+    where: {
+    },
+    include: {
+      user: {
+        include: {
+          profile: {
+            select: {
+              username: true,
+              avatar: true
+            }
+          }
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+}
 }

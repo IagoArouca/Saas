@@ -50,6 +50,7 @@ model ProfileVisit {
   profile   Profile  @relation(fields: [profileId], references: [id])
   ip        String?  // Opcional: para evitar contar a mesma pessoa mil vezes
   createdAt DateTime @default(now())
+  @@index([profileId, createdAt])
 }
 
 model VideoContent {

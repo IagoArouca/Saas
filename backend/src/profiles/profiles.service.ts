@@ -37,17 +37,25 @@ export class ProfilesService {
     }
 
     async findPublicProfile(username: string, ip: string) {
-        const profile = await this.prisma.profile.findUnique({
-            where: { username },
-            include: { projects: true }
-        });
+    const profile = await this.prisma.profile.findUnique({
+        where: { username },
+        include: { 
+        projects: true,
+        user: { select: { role: true } } 
+        },
+    });
 
-        if (profile) {
-            this.prisma.profileVisit.create({
-            data: { profileId: profile.id, ip }
-            }).catch(e => console.error(e));
-        }
-        
-        return profile;
+  if (!profile) {
+    throw new NotFoundException(`Perfil @${username} não encontrado`);
+  }
+
+  this.prisma.profileVisit.create({
+    data: { 
+      profileId: profile.id, 
+      ip: ip || 'unknown' 
     }
+  }).catch(e => console.error('Erro ao registrar visita:', e));
+  
+  return profile;
+}
 }

@@ -24,26 +24,44 @@ export class ChatService {
     });
   }
 
-  async sendMessage(userId: string, userRole: Role, conversationId: string, content: string) {
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
-      include: { participants: true }
-    });
+  async sendMessage(userId: string, userRole: string, conversationId: string, content: string) {
+  const conversation = await this.prisma.conversation.findUnique({
+    where: { id: conversationId },
+    include: { 
+      participants: { include: { profile: true } },
+      messages: { take: 1 } 
+    }
+  });
 
-    if (!conversation) throw new NotFoundException('Conversa não encontrada');
+  if (!conversation) throw new NotFoundException('Conversa não encontrada');
 
-    const isParticipant = conversation.participants.some(p => p.id === userId);
-    if (!isParticipant) throw new ForbiddenException('Não fazes parte desta conversa');
+  const isParticipant = conversation.participants.some(p => p.id === userId);
+  if (!isParticipant) throw new ForbiddenException('Você não faz parte desta conversa');
 
-    return this.prisma.message.create({
-      data: {
-        content,
-        conversationId,
-        senderId: userId,
-        receiverId: conversation.participants.find(p => p.id !== userId).id
-      }
-    });
+  if (conversation.messages.length === 0 && userRole !== 'RECRUITER') {
+    throw new ForbiddenException('Apenas recrutadores podem iniciar uma nova conversa.');
   }
+
+  const receiver = conversation.participants.find(p => p.id !== userId);
+  const sender = conversation.participants.find(p => p.id === userId);
+
+  const message = await this.prisma.message.create({
+    data: {
+      content,
+      conversationId,
+      senderId: userId,
+      receiverId: receiver.id
+    }
+  });
+
+  this.notificationsGateway.server.to(receiver.id).emit('newMessage', {
+    senderName: sender.profile?.fullName || 'Usuário da Mochila',
+    content: content,
+    conversationId: conversationId
+  });
+
+  return message;
+}
 
   async getMyConversations(userId: string) {
     return this.prisma.conversation.findMany({
@@ -54,4 +72,6 @@ export class ChatService {
       }
     });
   }
+
+  
 }
