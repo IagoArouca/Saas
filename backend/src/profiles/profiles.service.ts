@@ -6,21 +6,26 @@ export class ProfilesService {
     constructor(private prisma: PrismaService) {}
 
     async update(userId: string, data: any) {
-        const profile = await this.prisma.profile.findUnique({
-            where: { userId},
-        });
+        if (data.username) {
+            const usernameLower = data.username.toLowerCase();
+            
+            const existing = await this.prisma.profile.findFirst({
+                where: { 
+                    username: usernameLower,
+                    NOT: { userId: userId } 
+                }
+                });
 
-        if(!profile) {
-            throw new NotFoundException('Perfil não encontrado');
+                if (existing) {
+                throw new BadRequestException('Este username já está em uso.');
+                }
+            
+            data.username = usernameLower;
         }
 
-        return this.prisma.prisma.profile.update({
+        return this.prisma.profile.update({
             where: { userId },
-            data: {
-                bio: data.bio,
-                avatar: data.avatar,
-
-            },
+            data
         });
     }
 

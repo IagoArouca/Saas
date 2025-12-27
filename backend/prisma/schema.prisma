@@ -37,11 +37,19 @@ model Profile {
   username     String   @unique
   fullName     String?
   bio          String?
+  visits       ProfileVisit[]
   avatar       String?
   youtube      String? 
   technologies String[]
   user         User    @relation(fields: [userId], references: [id])
   userId       String  @unique
+}
+model ProfileVisit {
+  id        String   @id @default(uuid())
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id])
+  ip        String?  // Opcional: para evitar contar a mesma pessoa mil vezes
+  createdAt DateTime @default(now())
 }
 
 model VideoContent {
