@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Code2, Briefcase, MonitorPlay, ChevronRight, Loader2 } from 'lucide-react';
+import { useAuthStore } from '../store/useAuthStore'; // Importe a Store
 import api from '../services/api';
 
 const roles = [
@@ -35,6 +36,8 @@ export const Register = () => {
   const [selectedRole, setSelectedRole] = useState('DEV');
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
+  
+  const setAuth = useAuthStore((state: any) => state.setAuth); // Hook para salvar sessão
   const navigate = useNavigate();
 
   const onSubmit = async (data: any) => {
@@ -45,10 +48,24 @@ export const Register = () => {
         role: selectedRole 
       };
       
-      await api.post('/auth/register', payload);
+      // Chama o registro
+      const res = await api.post('/auth/register', payload);
       
-      alert('Conta criada com sucesso! Agora você pode fazer login.');
-      navigate('/login');
+      // Como o backend retorna o login automático, pegamos o access_token
+      const { user, access_token } = res.data;
+
+      // Salva na Store para o usuário já ficar logado
+      setAuth(user, access_token);
+      
+      alert('Conta criada com sucesso! Bem-vindo(a).');
+
+      // Redireciona conforme o cargo
+      if (user.role === 'RECRUITER') {
+        navigate('/dashboard/recruiter');
+      } else {
+        navigate('/dashboard/dev');
+      }
+
     } catch (error: any) {
       console.error('Erro ao registrar:', error);
       alert(error.response?.data?.message || 'Erro ao criar conta.');
@@ -65,6 +82,7 @@ export const Register = () => {
           <p className="text-slate-400 mt-2">Como você pretende usar a Mochila do Dev?</p>
         </div>
 
+        {/* Seleção de Cargo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {roles.map((role) => (
             <div
@@ -87,6 +105,7 @@ export const Register = () => {
           ))}
         </div>
 
+        {/* Formulário */}
         <div className="max-w-md mx-auto w-full pt-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>

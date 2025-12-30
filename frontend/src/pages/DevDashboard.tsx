@@ -1,79 +1,173 @@
-import { Play, Coffee, CheckCircle, Clock, Pause } from 'lucide-react';
-import { useState } from 'react';
-import { Timer } from '../components/Timer'; 
+import { useState, useEffect } from 'react';
+import { 
+  Calendar, Clock, Zap, Play, Square, 
+  RefreshCcw, Edit3, Save, Terminal, Trash2
+} from 'lucide-react';
 
-export const DevDashboard = () => {
-  const [isFocusing, setIsFocusing] = useState(false);
+const initialSchedule = [
+  { id: 'SEG', name: 'Segunda', tasks: ['Frontend', 'React', 'Tailwind', 'API'], color: 'from-blue-500' },
+  { id: 'TER', name: 'Terça', tasks: ['Backend', 'NodeJS', 'Prisma', 'SQL'], color: 'from-purple-500' },
+  { id: 'QUA', name: 'Quarta', tasks: ['DevOps', 'Docker', 'AWS', 'CI/CD'], color: 'from-amber-500' },
+  { id: 'QUI', name: 'Quinta', tasks: ['Testes', 'Jest', 'Cypress', 'Bugs'], color: 'from-emerald-500' },
+  { id: 'SEX', name: 'Sexta', tasks: ['SoftSkill', 'Gestão', 'Review', 'Planos'], color: 'from-rose-500' },
+];
+
+export const WeeklyOrchestrator = () => {
+  const [schedule, setSchedule] = useState(initialSchedule);
+  const [isEditing, setIsEditing] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isActive && timeLeft > 0) {
+      interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+    } else if (timeLeft === 0) {
+      clearInterval(interval);
+      alert("Sessão de Foco Finalizada!");
+      setIsActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft]);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const handleTaskChange = (dayId: string, taskIndex: number, newValue: string) => {
+    setSchedule(schedule.map(day => {
+      if (day.id === dayId) {
+        const newTasks = [...day.tasks];
+        newTasks[taskIndex] = newValue.slice(0, 15);
+        return { ...day, tasks: newTasks };
+      }
+      return day;
+    }));
+  };
+
+  const clearSchedule = () => {
+    if (confirm("Deseja limpar todas as disciplinas do cronograma?")) {
+      setSchedule(schedule.map(day => ({ ...day, tasks: ['', '', '', ''] })));
+    }
+  };
 
   return (
-    <div className="grid grid-cols-12 gap-6 animate-in fade-in duration-500">
+    <section className="mt-12 max-w-7xl mx-auto px-6 pb-20 animate-in fade-in duration-1000">
       
-      <div className="col-span-12 lg:col-span-8 space-y-6">
-        <header>
-          <h1 className="text-2xl font-bold italic">Boa jornada, <span className="text-blue-500">Dev</span></h1>
-          <p className="text-slate-400">Aqui está o seu plano de voo para hoje.</p>
-        </header>
-
-        <section className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="font-semibold flex items-center gap-2">
-              <Clock size={18} className="text-blue-400" /> Cronograma Semanal
-            </h2>
-            <button className="text-[10px] font-bold uppercase tracking-wider bg-blue-600/10 text-blue-400 px-4 py-2 rounded-full border border-blue-600/20 hover:bg-blue-600 hover:text-white transition-all">
-              Editar Grade
-            </button>
+      {/* 1. SEÇÃO POMODORO */}
+      <div className="mb-16 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center bg-slate-900/40 border border-slate-800 p-8 rounded-2xl backdrop-blur-md">
+        <div className="flex items-center gap-4">
+          <div className="p-4 bg-blue-600 rounded-xl shadow-lg shadow-blue-600/30">
+            <Terminal className="text-white" size={28} />
           </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {['Seg', 'Ter', 'Qua', 'Qui', 'Sex'].map(dia => (
-              <div key={dia} className="space-y-3">
-                <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">{dia}</span>
-                <div className="h-24 bg-slate-950/50 border border-slate-800/50 rounded-xl p-3 text-xs hover:border-blue-500/40 hover:bg-slate-900/50 transition-all cursor-pointer group">
-                  <p className="text-blue-400 font-bold group-hover:text-blue-300 transition-colors">09:00 - NestJS</p>
-                  <p className="text-slate-500 mt-1 leading-relaxed">Módulos e Auth</p>
-                </div>
-              </div>
-            ))}
+          <div>
+            <h2 className="text-xl font-black text-white tracking-tight italic">MODO_FOCO</h2>
+            <p className="text-xs font-mono text-slate-500 uppercase tracking-widest text-blue-400">Trabalho Profundo</p>
           </div>
-        </section>
-      </div>
+        </div>
 
-      <div className="col-span-12 lg:col-span-4 space-y-6">
-        <div className="bg-gradient-to-b from-slate-900 to-black border border-slate-800 rounded-[2.5rem] p-8 sticky top-6 shadow-2xl">
-          <h3 className="text-center text-slate-500 text-[10px] font-black mb-8 uppercase tracking-[0.3em]">Modo Foco</h3>
-          
-          <Timer /> 
-
-          <div className="flex justify-center gap-4 mt-8">
-            <button 
-              onClick={() => setIsFocusing(!isFocusing)}
-              className={`p-4 rounded-full transition-all ${isFocusing ? 'bg-amber-500/10 text-amber-500' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'}`}
-            >
-              {isFocusing ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
-            </button>
-            
-            <button className="p-4 bg-slate-800 text-slate-400 rounded-full hover:text-orange-400 hover:bg-orange-400/10 transition-all" title="Intervalo">
-              <Coffee size={24} />
-            </button>
-
-            <button className="p-4 bg-slate-800 text-slate-400 rounded-full hover:text-emerald-400 hover:bg-emerald-400/10 transition-all" title="Concluir Ciclo">
-              <CheckCircle size={24} />
-            </button>
+        <div className="flex flex-col items-center">
+          <span className="text-6xl font-black text-white font-mono tracking-tighter tabular-nums">
+            {formatTime(timeLeft)}
+          </span>
+          <div className="w-48 h-1 bg-slate-800 rounded-full mt-4 overflow-hidden">
+            <div 
+              className="h-full bg-blue-500 transition-all duration-1000 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+              style={{ width: `${(timeLeft / (25 * 60)) * 100}%` }}
+            />
           </div>
+        </div>
 
-          <div className="mt-10 grid grid-cols-2 gap-4">
-            <div className="text-center p-5 bg-slate-950/50 rounded-3xl border border-slate-800/50">
-              <p className="text-2xl font-black text-white">4</p>
-              <p className="text-[9px] text-slate-500 font-bold uppercase mt-1">Ciclos Hoje</p>
-            </div>
-            <div className="text-center p-5 bg-slate-950/50 rounded-3xl border border-slate-800/50">
-              <p className="text-2xl font-black text-blue-500">120</p>
-              <p className="text-[9px] text-slate-500 font-bold uppercase mt-1">Minutos</p>
-            </div>
-          </div>
+        <div className="flex justify-center lg:justify-end gap-3">
+          <button 
+            onClick={() => setIsActive(!isActive)}
+            className={`p-4 rounded-xl flex items-center gap-2 font-bold transition-all ${isActive ? 'bg-amber-500 text-slate-950' : 'bg-emerald-500 text-slate-950 hover:scale-105'}`}
+          >
+            {isActive ? <Square size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
+            {isActive ? 'PARAR' : 'INICIAR'}
+          </button>
+          <button 
+            onClick={() => { setIsActive(false); setTimeLeft(25 * 60); }}
+            className="p-4 bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-all"
+          >
+            <RefreshCcw size={20} />
+          </button>
         </div>
       </div>
 
-    </div>
+      {/* 2. CABEÇALHO */}
+      <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
+        <div>
+          <h2 className="text-3xl font-black text-white tracking-tighter">CRONOGRAMA_SEMANAL</h2>
+          <p className="text-slate-500 text-xs font-mono uppercase mt-1 tracking-[0.4em]">Orquestração de Sprints Diários</p>
+        </div>
+        
+        <div className="flex gap-3">
+          <button 
+            onClick={clearSchedule}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
+          >
+            <Trash2 size={18} />
+            LIMPAR DISCIPLINAS
+          </button>
+
+          <button 
+            onClick={() => setIsEditing(!isEditing)}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-xl ${isEditing ? 'bg-emerald-600 text-white shadow-emerald-900/20' : 'bg-blue-600 text-white shadow-blue-900/20'}`}
+          >
+            {isEditing ? <Save size={18} /> : <Edit3 size={18} />}
+            {isEditing ? 'SALVAR ALTERAÇÕES' : 'EDITAR MÓDULOS'}
+          </button>
+        </div>
+      </div>
+
+      {/* 3. COLUNAS DO CRONOGRAMA (Arredondamento Ajustado) */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+        {schedule.map((day) => (
+          <div 
+            key={day.id} 
+            className="group bg-slate-900/20 border border-slate-800 p-5 rounded-2xl hover:bg-slate-900/40 transition-all duration-500"
+          >
+            <div className={`w-12 h-1.5 rounded-full bg-gradient-to-r ${day.color} to-transparent mb-6`} />
+            
+            <span className="text-[10px] font-mono font-bold text-slate-600 tracking-[0.3em] uppercase block mb-1">
+              {day.id}_STATUS
+            </span>
+            <h3 className="text-xl font-black text-white mb-6 uppercase tracking-tighter italic">{day.name}</h3>
+
+            <div className="space-y-3">
+              {day.tasks.map((task, index) => (
+                <div key={index} className="relative">
+                  {isEditing ? (
+                    <input 
+                      type="text"
+                      value={task}
+                      placeholder="..."
+                      onChange={(e) => handleTaskChange(day.id, index, e.target.value)}
+                      className="w-full bg-slate-950 border border-blue-500/50 p-3 rounded-lg text-blue-400 font-bold uppercase tracking-tighter outline-none text-[10px] focus:border-blue-500 transition-all"
+                    />
+                  ) : (
+                    <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800 group-hover:border-slate-700 transition-colors h-[40px] flex items-center">
+                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest truncate">
+                        {task || <span className="opacity-10">—</span>}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-between items-center opacity-20 group-hover:opacity-100 transition-opacity">
+               <Zap size={14} className="text-blue-500" />
+               <div className="flex gap-1">
+                  {[1,2].map(i => <div key={i} className="w-1 h-1 rounded-full bg-slate-700" />)}
+               </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 };
