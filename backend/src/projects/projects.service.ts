@@ -13,10 +13,28 @@ export class ProjectsService {
       },
     });
   }
+
   async findAllMine(userId: string) {
     return this.prisma.project.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  // MÉTODO ATUALIZADO: Toggle Highlight
+  async toggleHighlight(projectId: string, userId: string) {
+    const project = await this.prisma.project.findUnique({ 
+      where: { id: projectId } 
+    });
+
+    if (!project) throw new NotFoundException('Projeto não encontrado');
+    if (project.userId !== userId) throw new ForbiddenException('Você não tem permissão');
+
+    return this.prisma.project.update({
+      where: { id: projectId },
+      data: {
+        isHighlighted: !project.isHighlighted, // Inverte o valor (true -> false / false -> true)
+      },
     });
   }
 
@@ -31,6 +49,7 @@ export class ProjectsService {
       data,
     });
   }
+
   async remove(projectId: string, userId: string) {
     const project = await this.prisma.project.findUnique({ where: { id: projectId } });
 
@@ -41,22 +60,25 @@ export class ProjectsService {
   }
 
   async explore(tech?: string) {
-  return this.prisma.project.findMany({
-    where: {
-    },
-    include: {
-      user: {
-        include: {
-          profile: {
-            select: {
-              username: true,
-              avatar: true
+    return this.prisma.project.findMany({
+      where: tech ? {
+        technologies: {
+          has: tech 
+        }
+      } : {},
+      include: {
+        user: {
+          include: {
+            profile: {
+              select: {
+                username: true,
+                avatar: true
+              }
             }
           }
         }
-      }
-    },
-    orderBy: { createdAt: 'desc' }
-  });
-}
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
 }

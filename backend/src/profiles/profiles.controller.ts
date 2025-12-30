@@ -39,10 +39,25 @@ export class ProfilesController {
   @Post('upload-avatar')
   @UseInterceptors(FileInterceptor('file')) 
   async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Request() req: any) {
-    const result = await this.cloudinaryService.uploadImage(file);
+    // Organizando na pasta 'avatars' no Cloudinary
+    const result = await this.cloudinaryService.uploadImage(file, 'mochila_dev/avatars');
     
     await this.profilesService.update(req.user.userId, { avatar: result.secure_url });
     
+    return { url: result.secure_url };
+  }
+
+  // NOVA ROTA: Upload de Banner
+  @UseGuards(JwtAuthGuard)
+  @Post('upload-banner')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadBanner(@UploadedFile() file: Express.Multer.File, @Request() req: any) {
+    // Organizando na pasta 'banners' no Cloudinary
+    const result = await this.cloudinaryService.uploadImage(file, 'mochila_dev/banners');
+
+    // Atualiza o campo bannerUrl que criamos no Prisma
+    await this.profilesService.update(req.user.userId, { bannerUrl: result.secure_url });
+
     return { url: result.secure_url };
   }
 

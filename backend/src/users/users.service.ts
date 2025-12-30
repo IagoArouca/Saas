@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
-import { profile } from 'console';
+
 
 @Injectable()
 export class UsersService {
@@ -28,6 +28,9 @@ export class UsersService {
     }
 
     async findByEmail(email: string) {
-        return this.prisma.user.findUnique({ where: { email } });
-    }
+    return this.prisma.user.findUnique({ 
+        where: { email },
+        include: { profile: true } 
+    });
+}
 }

@@ -1,98 +1,184 @@
-// backend/src/chat/chat.service.ts
-import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { Prisma } from '@prisma/client';
+
+/**
+ * Tipo forte para conversa com relações carregadas
+ */
+type ConversationWithRelations =
+  Prisma.ConversationGetPayload<{
+    include: {
+      users: {
+        include: {
+          profile: true;
+        };
+      };
+      messages: true;
+    };
+  }>;
 
 @Injectable()
 export class ChatService {
   constructor(
-    private prisma: PrismaService,
-    private notificationsGateway: NotificationsGateway
+    private readonly prisma: PrismaService,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
+  /**
+   * 🔹 Criar conversa entre recrutador e dev
+   */
   async createConversation(recruiterId: string, devId: string) {
-    const existing = await this.prisma.conversation.findFirst({
-      where: {
-        AND: [
-          { participants: { some: { id: recruiterId } } },
-          { participants: { some: { id: devId } } }
-        ]
-      }
-    });
+    const existingConversation =
+      await this.prisma.conversation.findFirst({
+        where: {
+          AND: [
+            { users: { some: { id: recruiterId } } },
+            { users: { some: { id: devId } } },
+          ],
+        },
+      });
 
-    if (existing) return existing;
+    if (existingConversation) {
+      return existingConversation;
+    }
 
     return this.prisma.conversation.create({
       data: {
-        participants: {
-          connect: [{ id: recruiterId }, { id: devId }]
-        }
-      }
+        users: {
+          connect: [{ id: recruiterId }, { id: devId }],
+        },
+      },
     });
   }
 
-  async sendMessage(userId: string, userRole: string, conversationId: string, content: string) {
-    const conversation = await this.prisma.conversation.findUnique({
-      where: { id: conversationId },
-      include: { 
-        participants: { include: { profile: true } },
-        messages: { take: 1, orderBy: { createdAt: 'desc' } } 
-      }
-    });
+  /**
+   * 🔹 Enviar mensagem
+   */
+  async sendMessage(
+    userId: string,
+    userRole: string,
+    conversationId: string,
+    content: string,
+  ) {
+    const conversation =
+      (await this.prisma.conversation.findUnique({
+        where: { id: conversationId },
+        include: {
+          users: {
+            include: {
+              profile: true,
+            },
+          },
+          messages: true,
+        },
+      })) as ConversationWithRelations | null;
 
-    if (!conversation) throw new NotFoundException('Conversa não encontrada');
-
-    const isParticipant = conversation.participants.some(p => p.id === userId);
-    if (!isParticipant) throw new ForbiddenException('Você não faz parte desta conversa');
-
-    if (conversation.messages.length === 0 && userRole !== 'RECRUITER') {
-      throw new ForbiddenException('Apenas recrutadores podem iniciar uma nova conversa.');
+    if (!conversation) {
+      throw new NotFoundException('Conversa não encontrada');
     }
 
-    const receiver = conversation.participants.find(p => p.id !== userId);
-    const sender = conversation.participants.find(p => p.id === userId);
+    const isParticipant = conversation.users.some(
+      (user) => user.id === userId,
+    );
+
+    if (!isParticipant) {
+      throw new ForbiddenException(
+        'Você não faz parte desta conversa',
+      );
+    }
+
+    // 🔒 Regra: apenas recrutador pode iniciar conversa
+    if (
+      conversation.messages.length === 0 &&
+      userRole !== 'RECRUITER'
+    ) {
+      throw new ForbiddenException(
+        'Apenas recrutadores podem iniciar uma nova conversa',
+      );
+    }
+
+    const sender = conversation.users.find(
+      (user) => user.id === userId,
+    );
+
+    if (!sender) {
+      throw new ForbiddenException(
+        'Remetente não encontrado na conversa',
+      );
+    }
+
+    const receiver = conversation.users.find(
+      (user) => user.id !== userId,
+    );
+
+    if (!receiver) {
+      throw new NotFoundException(
+        'Destinatário não encontrado',
+      );
+    }
 
     const message = await this.prisma.message.create({
       data: {
         content,
         conversationId,
-        senderId: userId,
-        receiverId: receiver.id
-      }
+        senderId: sender.id,
+        receiverId: receiver.id,
+      },
     });
 
-    // Emissão via Socket.io para tempo real
+    // 🔔 Notificação em tempo real (Socket.IO)
     if (this.notificationsGateway.server) {
-      this.notificationsGateway.server.to(receiver.id).emit('newMessage', {
-        senderName: sender.profile?.fullName || 'Usuário da Mochila',
-        content: content,
-        conversationId: conversationId
-      });
+      this.notificationsGateway.server
+        .to(receiver.id)
+        .emit('newMessage', {
+          conversationId,
+          content,
+          senderName:
+            sender.profile?.fullName || 'Usuário da Mochila',
+        });
     }
 
     return message;
   }
 
+  /**
+   * 🔹 Buscar conversas do usuário logado
+   */
   async getMyConversations(userId: string) {
     return this.prisma.conversation.findMany({
-      where: { 
-        participants: { some: { id: userId } } 
-      },
-      include: { 
-        messages: { 
-          take: 1, 
-          orderBy: { createdAt: 'desc' } 
+      where: {
+        users: {
+          some: {
+            id: userId,
+          },
         },
-        participants: { 
-          select: { 
-            id: true,
-            email: true, 
-            role: true, 
-            profile: { select: { fullName: true, avatar: true } } 
-          } 
-        }
       },
-      orderBy: { updatedAt: 'desc' }
+      include: {
+        users: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+            profile: {
+              select: {
+                fullName: true,
+                avatar: true,
+              },
+            },
+          },
+        },
+        messages: {
+          take: 1, // última mensagem
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 }
