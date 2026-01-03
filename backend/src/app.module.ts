@@ -14,6 +14,7 @@ import { ProductivityModule } from './productivity/productivity.module';
 import { CreatorsModule } from './creators/creators.module';
 import { ToolsModule } from './tools/tools.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { StudyModule } from './study/study.module';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     ProductivityModule, 
     CreatorsModule, 
     ToolsModule, 
-    AnalyticsModule
+    AnalyticsModule, StudyModule
   ],
   controllers: [AppController],
   providers: [AppService],

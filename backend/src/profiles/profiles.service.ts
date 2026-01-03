@@ -3,7 +3,7 @@ import {
   BadRequestException, 
   NotFoundException,    
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ProfilesService {
@@ -11,9 +11,10 @@ export class ProfilesService {
 
   /**
    * Atualiza o perfil do usuário.
-   * O objeto 'data' pode conter: fullName, bio, role, level, avatar, bannerUrl, etc.
    */
   async update(userId: string, data: any) {
+    if (!userId) throw new BadRequestException('ID do usuário é obrigatório');
+
     if (data.username) {
       const usernameLower = data.username.toLowerCase();
 
@@ -31,37 +32,50 @@ export class ProfilesService {
       data.username = usernameLower;
     }
 
-    // O Prisma salva role e level automaticamente se os nomes baterem com o Schema
     return this.prisma.profile.update({
       where: { userId },
       data,
     });
   }
 
+  /**
+   * Busca o perfil pelo ID do usuário (Conta)
+   */
   async getByUserId(userId: string) {
-    return this.prisma.profile.findUnique({
+    if (!userId) throw new BadRequestException('ID do usuário inválido');
+
+    const profile = await this.prisma.profile.findUnique({
       where: { userId },
       include: {
         user: {
           select: {
             email: true,
-            role: true, // Enum de permissão (DEV, RECRUITER...)
+            role: true,
           },
         },
       },
     });
+
+    if (!profile) {
+      throw new NotFoundException('Perfil não encontrado');
+    }
+
+    return profile;
   }
 
+  /**
+   * Busca o perfil público pelo username
+   */
   async findPublicProfile(username: string, ip: string) {
-    // Buscamos o perfil incluindo os campos role e level que adicionamos ao Prisma
     const profile = await this.prisma.profile.findUnique({
       where: { username },
       include: {
         user: { 
           select: { 
             role: true, 
+            // Buscamos os projetos que pertencem ao usuário deste perfil
             projects: {
-              orderBy: { createdAt: 'desc' } // Opcional: ordena os projetos
+              orderBy: { createdAt: 'desc' }
             } 
           } 
         },
@@ -72,7 +86,7 @@ export class ProfilesService {
       throw new NotFoundException(`Perfil @${username} não encontrado`);
     }
 
-    // Registro de visita em background para métricas
+    // Registro de visita (sem travar a resposta principal)
     this.prisma.profileVisit
       .create({
         data: {
@@ -83,13 +97,13 @@ export class ProfilesService {
       .catch((e) => console.error('Erro ao registrar visita:', e));
 
     /**
-     * Retorno formatado para o Frontend:
-     * - O spread ...profile já traz role e level do banco.
-     * - Extraímos os projetos do objeto user para a raiz.
+     * Formatamos o retorno para que os projetos fiquem no primeiro nível
+     * do objeto, facilitando o uso no Frontend.
      */
     return {
       ...profile,
-      projects: (profile.user as any)?.projects || []
+      userId: profile.userId, // Garantimos que o userId da conta está presente para o chat
+      projects: profile.user?.projects || []
     };
   }
 }

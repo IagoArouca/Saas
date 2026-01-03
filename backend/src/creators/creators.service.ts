@@ -1,31 +1,34 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class CreatorsService {
   constructor(private prisma: PrismaService) {}
 
-  async addVideo(creatorId: string, data: { title: string, videoUrl: string, thumbnail?: string }) {
+  async addVideo(userId: string, data: { title: string, videoUrl: string, thumbnail?: string }) {
     return this.prisma.videoContent.create({
       data: {
         ...data,
-        creatorId,
+        creatorId: userId,
       },
     });
   }
 
-  async getMyVideos(creatorId: string) {
+  async getMyVideos(userId: string) {
     return this.prisma.videoContent.findMany({
-      where: { creatorId },
+      where: { creatorId: userId },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async removeVideo(videoId: string, creatorId: string) {
-    const video = await this.prisma.videoContent.findUnique({ where: { id: videoId } });
+  async removeVideo(videoId: string, userId: string) {
+    const video = await this.prisma.videoContent.findUnique({ 
+      where: { id: videoId } 
+    });
     
-    if (!video || video.creatorId !== creatorId) {
-      throw new ForbiddenException('Ação não permitida para este conteúdo.');
+    if (!video) throw new NotFoundException('Vídeo não encontrado.');
+    if (video.creatorId !== userId) {
+      throw new ForbiddenException('Você não tem permissão para excluir este conteúdo.');
     }
 
     return this.prisma.videoContent.delete({ where: { id: videoId } });

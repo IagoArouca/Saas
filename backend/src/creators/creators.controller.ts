@@ -13,18 +13,19 @@ export class CreatorsController {
   @Post('video')
   @Roles(Role.CONTENT_CREATOR) 
   async upload(@Request() req: any, @Body() body: any) {
-    return this.creatorsService.addVideo(req.user.userId, body);
+    // Usamos req.user.id que vem do seu JwtStrategy
+    return this.creatorsService.addVideo(req.user.id, body);
   }
 
   @Get('my-content')
   @Roles(Role.CONTENT_CREATOR)
   async list(@Request() req: any) {
-    return this.creatorsService.getMyVideos(req.user.userId);
+    return this.creatorsService.getMyVideos(req.user.id);
   }
 
   @Delete('video/:id')
   @Roles(Role.CONTENT_CREATOR)
   async remove(@Request() req: any, @Param('id') id: string) {
-    return this.creatorsService.removeVideo(id, req.user.userId);
+    return this.creatorsService.removeVideo(id, req.user.id);
   }
 }

@@ -24,12 +24,14 @@ export class ProjectsController {
 
   @Post()
   create(@Request() req: any, @Body() body: any) {
-    return this.projectsService.create(req.user.userId, body);
+    const userId = req.user.userId || req.user.id || req.user.sub;
+    return this.projectsService.create(userId, body);
   }
 
   @Get('my-projects')
   findAll(@Request() req: any) {
-    return this.projectsService.findAllMine(req.user.userId);
+    const userId = req.user.userId || req.user.id || req.user.sub;
+    return this.projectsService.findAllMine(userId);
   }
 
   @Get('explore')
@@ -37,19 +39,23 @@ export class ProjectsController {
     return this.projectsService.explore(tech);
   }
 
-  // ROTA ATUALIZADA: Patch para destacar projeto
+  // ROTA DE DESTAQUE: Inverte o status de isHighlighted
   @Patch(':id/highlight')
   toggleHighlight(@Param('id') id: string, @Request() req: any) {
-    return this.projectsService.toggleHighlight(id, req.user.userId);
+    // Resolve o erro 403 garantindo que o ID do dono do token seja passado
+    const userId = req.user.userId || req.user.id || req.user.sub;
+    return this.projectsService.toggleHighlight(id, userId);
   }
 
   @Put(':id')
   update(@Param('id') id: string, @Request() req: any, @Body() body: any) {
-    return this.projectsService.update(id, req.user.userId, body);
+    const userId = req.user.userId || req.user.id || req.user.sub;
+    return this.projectsService.update(id, userId, body);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req: any) {
-    return this.projectsService.remove(id, req.user.userId);
+    const userId = req.user.userId || req.user.id || req.user.sub;
+    return this.projectsService.remove(id, userId);
   }
 }

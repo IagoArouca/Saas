@@ -1,184 +1,105 @@
-import {
-  Injectable,
-  ForbiddenException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { NotificationsGateway } from '../notifications/notifications.gateway';
-import { Prisma } from '@prisma/client';
-
-/**
- * Tipo forte para conversa com relações carregadas
- */
-type ConversationWithRelations =
-  Prisma.ConversationGetPayload<{
-    include: {
-      users: {
-        include: {
-          profile: true;
-        };
-      };
-      messages: true;
-    };
-  }>;
 
 @Injectable()
 export class ChatService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly notificationsGateway: NotificationsGateway,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  /**
-   * 🔹 Criar conversa entre recrutador e dev
-   */
-  async createConversation(recruiterId: string, devId: string) {
-    const existingConversation =
-      await this.prisma.conversation.findFirst({
-        where: {
-          AND: [
-            { users: { some: { id: recruiterId } } },
-            { users: { some: { id: devId } } },
-          ],
-        },
-      });
-
-    if (existingConversation) {
-      return existingConversation;
-    }
-
-    return this.prisma.conversation.create({
-      data: {
-        users: {
-          connect: [{ id: recruiterId }, { id: devId }],
-        },
-      },
-    });
-  }
-
-  /**
-   * 🔹 Enviar mensagem
-   */
   async sendMessage(
     userId: string,
     userRole: string,
-    conversationId: string,
     content: string,
+    conversationId?: string,
+    receiverId?: string,
   ) {
-    const conversation =
-      (await this.prisma.conversation.findUnique({
-        where: { id: conversationId },
-        include: {
-          users: {
-            include: {
-              profile: true,
-            },
-          },
-          messages: true,
-        },
-      })) as ConversationWithRelations | null;
+    let finalConversationId = conversationId;
 
-    if (!conversation) {
-      throw new NotFoundException('Conversa não encontrada');
+    // Se não houver conversa, tenta criar (apenas Recrutador)
+    if (!finalConversationId && receiverId) {
+      if (userRole !== 'RECRUITER') {
+        throw new ForbiddenException('Apenas recrutadores iniciam conversas.');
+      }
+
+      // Evitar conversa consigo mesmo
+      if (userId === receiverId) {
+        throw new BadRequestException('Não é possível iniciar chat consigo mesmo.');
+      }
+
+      const existing = await this.prisma.conversation.findFirst({
+        where: {
+          AND: [
+            { users: { some: { id: userId } } },
+            { users: { some: { id: receiverId } } }
+          ]
+        }
+      });
+
+      if (existing) {
+        finalConversationId = existing.id;
+      } else {
+        const newConv = await this.createConversation(userId, receiverId);
+        finalConversationId = newConv.id;
+      }
     }
 
-    const isParticipant = conversation.users.some(
-      (user) => user.id === userId,
-    );
+    if (!finalConversationId) throw new BadRequestException('ID da conversa ausente.');
 
-    if (!isParticipant) {
-      throw new ForbiddenException(
-        'Você não faz parte desta conversa',
-      );
-    }
-
-    // 🔒 Regra: apenas recrutador pode iniciar conversa
-    if (
-      conversation.messages.length === 0 &&
-      userRole !== 'RECRUITER'
-    ) {
-      throw new ForbiddenException(
-        'Apenas recrutadores podem iniciar uma nova conversa',
-      );
-    }
-
-    const sender = conversation.users.find(
-      (user) => user.id === userId,
-    );
-
-    if (!sender) {
-      throw new ForbiddenException(
-        'Remetente não encontrado na conversa',
-      );
-    }
-
-    const receiver = conversation.users.find(
-      (user) => user.id !== userId,
-    );
-
-    if (!receiver) {
-      throw new NotFoundException(
-        'Destinatário não encontrado',
-      );
-    }
-
-    const message = await this.prisma.message.create({
-      data: {
-        content,
-        conversationId,
-        senderId: sender.id,
-        receiverId: receiver.id,
-      },
+    const conversation = await this.prisma.conversation.findUnique({
+      where: { id: finalConversationId },
+      include: { users: true }
     });
 
-    // 🔔 Notificação em tempo real (Socket.IO)
-    if (this.notificationsGateway.server) {
-      this.notificationsGateway.server
-        .to(receiver.id)
-        .emit('newMessage', {
-          conversationId,
-          content,
-          senderName:
-            sender.profile?.fullName || 'Usuário da Mochila',
-        });
-    }
+    if (!conversation) throw new NotFoundException('Conversa inexistente.');
 
-    return message;
-  }
+    const receiver = conversation.users.find(u => u.id !== userId);
+    if (!receiver) throw new NotFoundException('Destinatário não encontrado.');
 
-  /**
-   * 🔹 Buscar conversas do usuário logado
-   */
-  async getMyConversations(userId: string) {
-    return this.prisma.conversation.findMany({
-      where: {
-        users: {
-          some: {
-            id: userId,
-          },
-        },
+    return this.prisma.message.create({
+      data: {
+        content,
+        conversationId: finalConversationId,
+        senderId: userId,
+        receiverId: receiver.id,
       },
       include: {
-        users: {
-          select: {
+        sender: { 
+          select: { 
             id: true,
+            email: true, // Usamos email pois username não existe no Model User
+            profile: { select: { avatar: true, username: true } } // Pegamos o username daqui!
+          } 
+        }
+      }
+    });
+  }
+
+  async getMyConversations(userId: string) {
+    return this.prisma.conversation.findMany({
+      where: { users: { some: { id: userId } } },
+      include: {
+        users: { 
+          select: { 
+            id: true, 
             email: true,
-            role: true,
-            profile: {
-              select: {
-                fullName: true,
-                avatar: true,
-              },
-            },
-          },
+            profile: { select: { fullName: true, avatar: true, username: true } } 
+          } 
         },
-        messages: {
-          take: 1, // última mensagem
-        },
+        messages: { 
+          orderBy: { createdAt: 'asc' }, 
+          take: 50 
+        }
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' } // Usando createdAt pois seu model não tem updatedAt
+    });
+  }
+
+  async createConversation(userId: string, receiverId: string) {
+    return this.prisma.conversation.create({
+      data: {
+        users: {
+          connect: [{ id: userId }, { id: receiverId }]
+        }
+      }
     });
   }
 }

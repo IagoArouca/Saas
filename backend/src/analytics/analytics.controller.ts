@@ -8,9 +8,13 @@ export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('profile-views')
-  async getProfileViews(@Request() req) {
-
+  async getProfileViews(@Request() req: any) {
+    // Usamos o ID injetado pelo Passport JWT
     const userId = req.user.id;
+
+    if (!userId) {
+      throw new Error("Usuário não identificado");
+    }
 
     return this.analyticsService.getProfileStats(userId);
   }

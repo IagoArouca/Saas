@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Request, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards, Request } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -10,25 +10,48 @@ import { Role } from '@prisma/client';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
-  @Post('initiate')
-  @UseGuards(RolesGuard)
-  @Roles(Role.RECRUITER)
-  async initiate(@Request() req: any, @Body() body: { devId: string }) {
-    return this.chatService.createConversation(req.user.userId, body.devId);
-  }
-
+  /**
+   * Envio de mensagem (Híbrido)
+   * Se enviar conversationId: Responde a um chat existente.
+   * Se enviar receiverId: Tenta iniciar um novo chat (Validado no Service).
+   */
   @Post('send')
-  async send(@Request() req: any, @Body() body: { conversationId: string, content: string }) {
+  async send(
+    @Request() req: any,
+    @Body() body: {
+      conversationId?: string;
+      receiverId?: string;
+      content: string;
+    },
+  ) {
+    // Usamos 'req.user.id' porque corrigimos a JwtStrategy para retornar 'id'
     return this.chatService.sendMessage(
-      req.user.userId, 
-      req.user.role, 
-      body.conversationId, 
-      body.content
+      req.user.id,
+      req.user.role,
+      body.content,
+      body.conversationId,
+      body.receiverId,
     );
   }
 
+  /**
+   * Lista todas as conversas do usuário logado
+   */
   @Get('my-chats')
   async getMyChats(@Request() req: any) {
-    return this.chatService.getMyConversations(req.user.userId);
+    return this.chatService.getMyConversations(req.user.id);
+  }
+
+  /**
+   * Endpoint explícito para recrutadores iniciarem conversa (opcional)
+   */
+  @Post('initiate')
+  @UseGuards(RolesGuard)
+  @Roles(Role.RECRUITER)
+  async initiate(
+    @Request() req: any,
+    @Body() body: { devId: string },
+  ) {
+    return this.chatService.createConversation(req.user.id, body.devId);
   }
 }
