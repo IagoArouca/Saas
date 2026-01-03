@@ -54,7 +54,7 @@ export const WeeklyOrchestrator = () => {
   };
 
   return (
-    <section className="mt-12 max-w-7xl mx-auto px-6 pb-20 animate-in fade-in duration-1000">
+    <section className="max-w-7xl mx-auto px-6 pb-20 animate-in fade-in duration-1000">
       
       {/* 1. SEÇÃO POMODORO */}
       <div className="mb-16 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center bg-slate-900/40 border border-slate-800 p-8 rounded-2xl backdrop-blur-md">

@@ -106,7 +106,7 @@ export const ProjectsSection = () => {
           className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl transition-all font-bold shadow-xl shadow-blue-900/20 group border border-blue-400/20"
         >
           <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-          <span className="tracking-widest text-sm">NOVO_DEPLOY</span>
+          <span className="tracking-widest text-sm">Criar</span>
         </button>
       </div>
 

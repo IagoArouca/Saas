@@ -5,7 +5,10 @@ import {
   Settings, 
   LogOut, 
   Folder, 
-  UserCircle 
+  UserCircle,
+  Globe,
+  Video,
+  BookOpen
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
@@ -13,53 +16,80 @@ import { useAuthStore } from '../store/useAuthStore';
 export const Sidebar = () => {
   const { user, logout, hasUnreadMessages, setHasUnreadMessages } = useAuthStore();
 
-  // Definimos os itens do menu
+  const isDev = user?.role === 'DEV';
+  const isRecruiter = user?.role === 'RECRUITER';
+  const isCreator = user?.role === 'CONTENT_CREATOR';
+
   const menuItems = [
     { 
       name: 'Dashboard', 
       icon: LayoutDashboard, 
-      path: user?.role === 'DEV' ? '/dashboard/dev' : '/dashboard/recruiter' 
+      path: isCreator ? '/dashboard/creator' : isRecruiter ? '/dashboard/recruiter' : '/dashboard/dev',
+      show: true 
     },
     { 
-      name: 'Projetos', 
+      name: 'Meus Projetos', 
       icon: Folder, 
       path: '/dashboard/projects',
-      // Exibe apenas para DEVs ou remova a linha abaixo para exibir para todos
-      show: user?.role === 'DEV' 
+      show: isDev 
+    },
+    { 
+      name: 'Trilha de Estudos', 
+      icon: BookOpen, 
+      path: '/dashboard/study-tracks',
+      show: isDev 
     },
     { 
       name: 'Explorar', 
       icon: Search, 
       path: '/dashboard/explore', 
-      show: true // Agora visível para todos os cargos
+      show: isDev || isRecruiter 
+    },
+    { 
+      name: 'Meus Vídeos', 
+      icon: Video, 
+      path: '/dashboard/my-videos', 
+      show: isCreator 
+    },
+    // Este item agora só aparece para o Creator para evitar o erro de undefined no Dev
+    { 
+      name: 'Ver Perfil Público', 
+      icon: Globe, 
+      path: `/p/${user?.username || user?.profile?.username}`,
+      show: isCreator && (user?.username || user?.profile?.username)
     },
     { 
       name: 'Mensagens', 
       icon: MessageSquare, 
       path: '/dashboard/chat', 
-      badge: hasUnreadMessages 
+      badge: hasUnreadMessages,
+      show: !isCreator 
     },
     { 
-      name: 'Meu Perfil', 
+      name: 'Meu Perfil', // Restaurado o nome e ícone padrão para o Dev
       icon: UserCircle, 
-      path: '/dashboard/profile' 
+      path: '/dashboard/profile',
+      show: true 
     },
     { 
-      name: 'Ajustes', 
+      name: 'Configurações', 
       icon: Settings, 
-      path: '/dashboard/settings' 
+      path: '/dashboard/settings',
+      show: true 
     },
+    
   ];
 
   return (
     <aside className="w-64 bg-slate-950 border-r border-slate-800 flex flex-col h-screen sticky top-0">
-      <div className="p-8 text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+      <div className="p-8 text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent italic tracking-tighter">
         Mochila.dev
       </div>
 
       <nav className="flex-1 px-4 space-y-2">
-        {/* Filtramos os itens que têm permissão de aparecer */}
-        {menuItems.filter(item => item.show !== false).map((item) => (
+        {menuItems
+          .filter(item => item.show) 
+          .map((item) => (
           <NavLink
             key={item.name}
             to={item.path}
@@ -74,8 +104,6 @@ export const Sidebar = () => {
           >
             <item.icon size={20} />
             <span className="font-medium text-sm">{item.name}</span>
-            
-            {/* Indicador de Mensagens não lidas */}
             {item.badge && (
               <span className="absolute right-4 w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
             )}
@@ -83,7 +111,6 @@ export const Sidebar = () => {
         ))}
       </nav>
 
-      {/* Botão de Sair */}
       <div className="p-4 border-t border-slate-800">
         <button 
           onClick={logout}

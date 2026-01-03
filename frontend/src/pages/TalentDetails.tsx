@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { recruiterService } from '../services/recruiterService';
-import { chatService } from '../services/chatService'; 
 import { Github, ExternalLink, MessageSquare, Clock, Trophy, Loader2 } from 'lucide-react';
 
 export const TalentDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [dev, setDev] = useState<any>(null);
-  const [loadingChat, setLoadingChat] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -16,16 +14,11 @@ export const TalentDetails = () => {
     }
   }, [id]);
 
-  const handleStartChat = async () => {
-    setLoadingChat(true);
-    try {
-      const res = await chatService.getOrCreateConversation(dev.id);
-      navigate(`/dashboard/chat?id=${res.data.id}`);
-    } catch (err) {
-      alert("Não foi possível iniciar a conversa.");
-    } finally {
-      setLoadingChat(false);
-    }
+  const handleStartChat = () => {
+    if (!dev) return;
+    // Redireciona para o chat passando o ID e Nome do Dev na URL
+    const targetName = dev.profile?.fullName || dev.email;
+    navigate(`/dashboard/chat?targetId=${dev.id}&targetName=${encodeURIComponent(targetName)}`);
   };
 
   if (!dev) return (
@@ -57,14 +50,14 @@ export const TalentDetails = () => {
 
         <button 
           onClick={handleStartChat}
-          disabled={loadingChat}
-          className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-emerald-900/40 active:scale-95"
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-emerald-900/40 active:scale-95"
         >
-          {loadingChat ? <Loader2 className="animate-spin" size={20} /> : <MessageSquare size={20} />}
+          <MessageSquare size={20} />
           Iniciar Conversa
         </button>
       </div>
 
+      {/* Restante do componente (Projetos e Foco) permanece igual... */}
       <div className="grid grid-cols-12 gap-8">
         <div className="col-span-12 md:col-span-8 space-y-6">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
@@ -81,33 +74,8 @@ export const TalentDetails = () => {
                   </div>
                 </div>
                 <p className="text-slate-400 text-sm mb-6 leading-relaxed">{project.description}</p>
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies?.map((t: string) => (
-                    <span key={t} className="text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg">
-                      {t}
-                    </span>
-                  ))}
-                </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        <div className="col-span-12 md:col-span-4 space-y-6">
-          <div className="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 p-8 rounded-[2rem]">
-            <h3 className="font-bold text-white mb-6 flex items-center gap-2">
-              <Clock size={18} className="text-blue-400"/> Foco e Disciplina
-            </h3>
-            <div className="space-y-6">
-              <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800/50">
-                <p className="text-slate-500 text-[10px] font-black uppercase mb-1">Sessões Pomodoro</p>
-                <p className="font-mono text-3xl text-white">42</p>
-              </div>
-              <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800/50">
-                <p className="text-slate-500 text-[10px] font-black uppercase mb-1">Horas de Estudo</p>
-                <p className="font-mono text-3xl text-blue-400">18h</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
