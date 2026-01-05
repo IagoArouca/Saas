@@ -10,7 +10,8 @@ import {
   Loader2,
   Plus,
   ShieldCheck,
-  Terminal
+  Terminal,
+  Linkedin
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuthStore } from '../store/useAuthStore';
@@ -57,7 +58,6 @@ export const PublicProfile = () => {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState(0);
 
-  // --- ADIÇÃO: REGISTRO DE VISITA ---
   useEffect(() => {
     const recordVisit = async () => {
       try {
@@ -120,10 +120,10 @@ export const PublicProfile = () => {
   const hasArchive = (profile.projects?.length || 0) > featuredProjects.length;
 
   const sections = [
-    { id: 'briefing' },
-    { id: 'stack' },
+    { id: 'briefing'},
+    { id: 'stack'},
     ...featuredProjects.map((_: any, i: number) => ({ id: `project-${i}` })),
-    { id: 'contact', label: 'Contact' }
+    { id: 'contact'}
   ];
 
   return (
@@ -132,6 +132,7 @@ export const PublicProfile = () => {
         <title>{`${profile.fullName || profile.username} | Dev_Dossier`}</title>
       </Helmet>
 
+      {/* Navegação Lateral */}
       <nav className="fixed right-6 md:right-10 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-8">
         {sections.map((sec, i) => (
           <button
@@ -152,6 +153,8 @@ export const PublicProfile = () => {
       </nav>
 
       <div className="min-h-screen bg-[#020203] text-white selection:bg-blue-500/30 font-sans">
+        
+        {/* Hero Header */}
         <header className="relative h-[35rem] w-full overflow-hidden border-b border-white/5">
           {profile.bannerUrl ? (
             <img src={profile.bannerUrl} className="w-full h-full object-cover opacity-40" alt="" />
@@ -189,6 +192,7 @@ export const PublicProfile = () => {
         </header>
 
         <main>
+          {/* Bio Section */}
           <SectionWrapper id="briefing" index={0} setActiveSection={setActiveSection}>
             <div className="max-w-4xl">
               <h2 className="text-blue-500 font-mono tracking-[0.5em] uppercase text-xs mb-8 flex items-center gap-2">
@@ -203,6 +207,7 @@ export const PublicProfile = () => {
             </div>
           </SectionWrapper>
 
+          {/* Tech Stack Section */}
           <SectionWrapper id="stack" index={1} setActiveSection={setActiveSection}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               <div>
@@ -220,6 +225,7 @@ export const PublicProfile = () => {
             </div>
           </SectionWrapper>
 
+          {/* Featured Projects */}
           {featuredProjects.map((project: any, i: number) => (
             <SectionWrapper key={project.id} id={`project-${i}`} index={i + 2} setActiveSection={setActiveSection}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
@@ -256,6 +262,7 @@ export const PublicProfile = () => {
             </SectionWrapper>
           ))}
 
+          {/* Archive Link */}
           <div className="py-32 flex flex-col items-center justify-center border-t border-white/5 bg-[#020203]">
               <button 
                 onClick={() => { if (profile?.username) navigate(`/archive/${profile.username}`); }} 
@@ -269,17 +276,18 @@ export const PublicProfile = () => {
                 </div>
                 <div className="text-center">
                   <span className="block font-mono text-[10px] uppercase tracking-[0.5em] text-zinc-500 group-hover:text-white transition-colors mb-2">
-                    Access_Full_Archive
+                    Accessar todos projetos
                   </span>
                   {hasArchive && (
                     <span className="text-[9px] text-blue-500/50 font-bold uppercase tracking-widest">
-                      +{profile.projects.length - featuredProjects.length} Modules Found
+                      +{profile.projects.length - featuredProjects.length} Projetos
                     </span>
                   )}
                 </div>
               </button>
           </div>
 
+          {/* Contact Section */}
           <SectionWrapper id="contact" index={sections.length - 1} setActiveSection={setActiveSection}>
             <div className="w-full max-w-5xl mx-auto">
               <h2 className="text-emerald-500 font-mono tracking-[0.5em] uppercase text-[10px] mb-12 flex items-center gap-4">
@@ -287,7 +295,7 @@ export const PublicProfile = () => {
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                 <h3 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-none">
-                  Construir<br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-400"> o Futuro</span>
+                  Vamos Construir<br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-400"> o Futuro</span>
                 </h3>
                 <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-12 space-y-8">
                   <div className="grid gap-4">
@@ -297,13 +305,29 @@ export const PublicProfile = () => {
                         <ExternalLink size={14} className="opacity-20 group-hover:opacity-100" />
                       </a>
                     )}
-                    <a href={`mailto:${profile.email}`} className="flex items-center justify-between p-6 bg-black/40 border border-white/5 rounded-2xl hover:border-emerald-500 transition-all group">
-                      <div className="flex items-center gap-4"><Mail size={20} className="text-emerald-500" /><span className="font-bold uppercase tracking-tighter text-sm">Email</span></div>
-                      <ExternalLink size={14} className="opacity-20 group-hover:opacity-100" />
-                    </a>
+                    {profile.linkedinUrl && (
+                      <a href={profile.linkedinUrl} target="_blank" rel="noreferrer" className="flex items-center justify-between p-6 bg-black/40 border border-white/5 rounded-2xl hover:border-blue-400 transition-all group">
+                        <div className="flex items-center gap-4"><Linkedin size={20} className="text-blue-400" /><span className="font-bold uppercase tracking-tighter text-sm">Linkedin</span></div>
+                        <ExternalLink size={14} className="opacity-20 group-hover:opacity-100" />
+                      </a>
+                    )}
+                    
+                    {/* PUXA O E-MAIL DO CAMPO 'EMAIL' SALVO NO PERFIL */}
+                    {profile.email && (
+                      <a href={`mailto:${profile.email}`} className="flex items-center justify-between p-6 bg-black/40 border border-white/5 rounded-2xl hover:border-emerald-500 transition-all group">
+                        <div className="flex items-center gap-4">
+                          <Mail size={20} className="text-emerald-500" />
+                          <div className="flex flex-col">
+                            <span className="font-bold uppercase tracking-tighter text-sm">Email</span>
+                            <span className="text-[10px] text-zinc-500 font-mono lowercase">{profile.email}</span>
+                          </div>
+                        </div>
+                        <ExternalLink size={14} className="opacity-20 group-hover:opacity-100" />
+                      </a>
+                    )}
                   </div>
                   <button onClick={handleStartChat} className="w-full py-6 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 text-xs">
-                    <MessageSquare size={18} /> Establish_Connection
+                    <MessageSquare size={18} /> Estabelecer Conexão
                   </button>
                 </div>
               </div>

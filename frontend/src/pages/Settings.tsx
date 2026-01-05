@@ -3,7 +3,7 @@ import api from '../services/api';
 import { useEffect, useState, useRef } from 'react';
 import { 
   Loader2, Save, Github, 
-  Youtube, Linkedin, Type, 
+  Mail, Linkedin, Type, 
   ShieldCheck, Camera, Sparkles, Briefcase, BarChart3
 } from 'lucide-react';
 import { AvatarUpload } from '../components/AvatarUpload';
@@ -31,7 +31,6 @@ export const Settings = () => {
       const res = await api.get('/profiles/me');
       const data = {
         ...res.data,
-        youtubeUrl: res.data.youtube,
         technologies: res.data.technologies?.join(', ')
       };
       reset(data); 
@@ -67,12 +66,10 @@ export const Settings = () => {
       const { id, userId, user, visits, ...rest } = data;
       const payload = {
         ...rest,
-        youtube: rest.youtubeUrl,
         technologies: rest.technologies 
           ? rest.technologies.split(',').map((t: string) => t.trim()).filter((t: string) => t !== "") 
           : []
       };
-      delete (payload as any).youtubeUrl;
       
       await api.put('/profiles/update', payload);
       alert('Sincronização Neural Completa!');
@@ -96,7 +93,6 @@ export const Settings = () => {
   return (
     <div className="max-w-6xl mx-auto py-12 px-6 animate-in fade-in duration-1000">
       
-      {/* SEÇÃO DE BANNER (VERSÃO REFORÇADA) */}
       <section className="relative h-64 rounded-[2.5rem] overflow-hidden border border-white/5 mb-12 bg-[#0a0a0c]">
         <input 
           type="file" 
@@ -112,7 +108,6 @@ export const Settings = () => {
           <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-20" />
         )}
         
-        {/* O gradiente usa pointer-events-none para não bloquear o clique no botão */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#020203] via-transparent to-transparent pointer-events-none" />
         
         <div className="absolute bottom-6 right-6 z-[100]">
@@ -131,7 +126,6 @@ export const Settings = () => {
         </div>
       </section>
 
-      {/* HEADER DE IDENTIDADE */}
       <header className="relative -mt-32 mb-16 flex flex-col md:flex-row items-center md:items-end gap-8 px-6">
         <div className="relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
@@ -148,7 +142,6 @@ export const Settings = () => {
       
       <form onSubmit={handleSubmit(onUpdateProfile)} className="space-y-12">
         
-        {/* PERSONAL DOSSIER CARD */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[#0a0a0c]/50 p-10 rounded-[3rem] border border-white/5 relative">
           <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none">
             <Sparkles size={120} />
@@ -156,7 +149,7 @@ export const Settings = () => {
 
           <div className="md:col-span-2 flex items-center gap-4 mb-4">
             <h2 className="text-white font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-3">
-               <Type size={14} className="text-blue-500"/> Dossiê pessoal
+                <Type size={14} className="text-blue-500"/> Dossiê pessoal
             </h2>
             <div className="h-[1px] flex-1 bg-white/5" />
           </div>
@@ -235,12 +228,24 @@ export const Settings = () => {
           </div>
         </div>
 
-        {/* CANAIS DIGITAIS */}
         <div className="bg-[#0a0a0c]/50 p-10 rounded-[3rem] border border-white/5 relative overflow-hidden">
           <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="group">
+              <label className="text-[9px] font-black text-slate-600 uppercase tracking-widest mb-3 block ml-1">Email_Contato</label>
+              <div className="relative flex items-center bg-black border border-white/5 rounded-2xl focus-within:border-white/20 transition-all p-1">
+                <div className="p-3 rounded-xl bg-white/[0.02] text-blue-500 opacity-40 group-focus-within:opacity-100 transition-opacity">
+                  <Mail size={18} />
+                </div>
+                <input 
+                  {...register('email')} 
+                  className="flex-1 bg-transparent p-3 outline-none text-[10px] text-white font-mono placeholder:text-slate-900" 
+                  placeholder="seu@email.com"
+                />
+              </div>
+            </div>
+
             {[
               { id: 'githubUrl', icon: Github, label: 'Github', color: 'text-white' },
-              { id: 'youtubeUrl', icon: Youtube, label: 'Youtube', color: 'text-red-500' },
               { id: 'linkedinUrl', icon: Linkedin, label: 'Linkedin', color: 'text-blue-400' }
             ].map((item) => (
               <div key={item.id} className="group">
@@ -260,7 +265,6 @@ export const Settings = () => {
           </div>
         </div>
 
-        {/* SUBMIT BUTTON */}
         <div className="flex justify-end">
           <button 
             type="submit"
