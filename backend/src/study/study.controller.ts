@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Patch, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { StudyTrackService } from './study.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // Ajuste o caminho conforme seu projeto
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('study')
 @UseGuards(JwtAuthGuard)
@@ -17,8 +17,28 @@ export class StudyTrackController {
     return this.studyService.create(req.user.id, data);
   }
 
+  @Delete('tracks/:id')
+  deleteTrack(@Param('id') id: string) {
+    return this.studyService.deleteTrack(id);
+  }
+
   @Patch('modules/:id/toggle')
   toggleModule(@Param('id') id: string) {
     return this.studyService.toggleModule(id);
+  }
+
+  @Patch('modules/:id')
+  updateModule(@Param('id') id: string, @Body('title') title: string) {
+    return this.studyService.updateModule(id, title);
+  }
+
+  @Delete('modules/:id')
+  deleteModule(@Param('id') id: string) {
+    return this.studyService.deleteModule(id);
+  }
+
+  @Post('tracks/:id/modules')
+  addModule(@Param('id') id: string, @Body('title') title: string) {
+    return this.studyService.addModuleToTrack(id, title);
   }
 }

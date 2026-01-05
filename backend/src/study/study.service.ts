@@ -1,21 +1,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
-const MASTER_ROADMAP = {
-  title: "Engenharia de Software: Roadmap Júnior para Pleno",
-  level: "Pleno",
-  modules: [
-    "Clean Code: Nomenclatura, Funções e Comentários",
-    "SOLID: Princípio de Responsabilidade Única (SRP)",
-    "Arquitetura: Injeção de Dependência no NestJS",
-    "Banco de Dados: Relacionamentos e Indexação com Prisma",
-    "Segurança: Implementação de JWT e Refresh Token",
-    "Testes: Unitários com Jest (TDD Básico)",
-    "Infra: Dockerização e Docker Compose",
-    "Mensageria: Filas e Background Jobs (Redis)",
-    "Soft Skills: Escrita de PRs e Code Review"
-  ]
-};
+const ROADMAPS_PADRAO = [
+  {
+    title: "Engenharia de Software: Roadmap para Júnior",
+    level: "Júnior",
+    modules: [
+      "Fundamentos: Lógica de Programação e Algoritmos",
+      "Versionamento: Git Flow e Conventional Commits",
+      "Web Basics: HTML5 Semântico e CSS Moderno",
+      "JavaScript: ES6+, Async/Await e Manipulação de DOM",
+      "React: Hooks Básicos (useState, useEffect)",
+      "API: Consumo de REST APIs com Axios/Fetch",
+      "CSS Frameworks: Tailwind CSS",
+      "Soft Skills: Metodologias Ágeis (Scrum/Kanban)"
+    ]
+  },
+  {
+    title: "Engenharia de Software: Roadmap Júnior para Pleno",
+    level: "Pleno",
+    modules: [
+      "Clean Code: Nomenclatura, Funções e Comentários",
+      "SOLID: Princípios de Design de Software",
+      "Arquitetura: Injeção de Dependência e NestJS",
+      "Banco de Dados: Relacionamentos e Indexação com Prisma",
+      "Segurança: JWT, Refresh Tokens e Roles",
+      "Testes: Unitários com Jest",
+      "Infra: Docker e Docker Compose",
+      "Mensageria: Redis e Filas (BullMQ)"
+    ]
+  }
+];
 
 @Injectable()
 export class StudyTrackService {
@@ -25,17 +40,16 @@ export class StudyTrackService {
     const tracks = await this.prisma.studyTrack.findMany({
       where: { userId },
       include: { 
-        modules: { 
-          orderBy: { order: 'asc' } 
-        } 
+        modules: { orderBy: { order: 'asc' } } 
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    // Se estiver vazio, cria automaticamente a trilha padrão para o Dev
     if (tracks.length === 0) {
-      const defaultTrack = await this.create(userId, MASTER_ROADMAP);
-      return [defaultTrack];
+      const createdTracks = await Promise.all(
+        ROADMAPS_PADRAO.map(roadmap => this.create(userId, roadmap))
+      );
+      return createdTracks;
     }
 
     return tracks;
@@ -58,11 +72,14 @@ export class StudyTrackService {
     });
   }
 
-  async toggleModule(moduleId: string) {
-    const studyModule = await this.prisma.studyModule.findUnique({ 
-      where: { id: moduleId } 
+  async deleteTrack(trackId: string) {
+    return this.prisma.studyTrack.delete({
+      where: { id: trackId }
     });
-    
+  }
+
+  async toggleModule(moduleId: string) {
+    const studyModule = await this.prisma.studyModule.findUnique({ where: { id: moduleId } });
     if (!studyModule) throw new NotFoundException('Módulo não encontrado');
 
     return this.prisma.studyModule.update({
@@ -71,6 +88,7 @@ export class StudyTrackService {
     });
   }
 
+  // MÉTODO QUE ESTAVA FALTANDO
   async updateModule(moduleId: string, title: string) {
     return this.prisma.studyModule.update({
       where: { id: moduleId },
@@ -78,21 +96,16 @@ export class StudyTrackService {
     });
   }
 
+  // MÉTODO QUE ESTAVA FALTANDO
   async deleteModule(moduleId: string) {
-    return this.prisma.studyModule.delete({ 
-      where: { id: moduleId } 
-    });
-  }
-
-  async deleteTrack(trackId: string) {
-    return this.prisma.studyTrack.delete({ 
-      where: { id: trackId } 
+    return this.prisma.studyModule.delete({
+      where: { id: moduleId }
     });
   }
 
   async addModuleToTrack(trackId: string, title: string) {
     const lastModule = await this.prisma.studyModule.findFirst({
-      where: { trackId: trackId }, // Ajustado para 'trackId' conforme seu schema
+      where: { trackId },
       orderBy: { order: 'desc' }
     });
 
@@ -100,7 +113,7 @@ export class StudyTrackService {
       data: {
         title,
         order: lastModule ? lastModule.order + 1 : 0,
-        trackId: trackId // Ajustado para 'trackId' conforme seu schema
+        trackId
       }
     });
   }
