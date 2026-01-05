@@ -112,7 +112,7 @@ export const ExploreProjects = () => {
                   onClick={() => navigate(`/p/${proj.user?.profile?.username}`)}
                   className="w-full py-3 bg-emerald-600/10 hover:bg-emerald-600 text-emerald-500 hover:text-white text-[10px] font-black rounded-lg transition-all flex items-center justify-center gap-2 border border-emerald-500/20 uppercase tracking-[0.2em] group-hover:shadow-[0_0_15px_rgba(16,185,129,0.2)]"
                 >
-                  Acessar Arquivos <ExternalLink size={12} />
+                  Acessar Perfil <ExternalLink size={12} />
                 </button>
               </div>
             </div>

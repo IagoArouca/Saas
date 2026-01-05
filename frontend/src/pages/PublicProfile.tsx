@@ -237,7 +237,7 @@ export const PublicProfile = () => {
                   <div className="flex flex-wrap items-center gap-8">
                     {project.githubUrl && (
                       <a href={project.githubUrl} target="_blank" rel="noreferrer" className="group flex items-center gap-4 text-xs font-black uppercase tracking-widest hover:text-blue-500 transition-all">
-                        <Github size={14} /> <span>Repository</span>
+                        <Github size={14} /> <span>Deploy</span>
                         <div className="h-px w-8 bg-white/20 group-hover:w-16 group-hover:bg-blue-500 transition-all" />
                       </a>
                     )}
