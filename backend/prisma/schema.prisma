@@ -45,7 +45,7 @@ model Profile {
   visits       ProfileVisit[]
   avatar       String?
   bannerUrl    String?
-  youtube      String? 
+  email        String? 
   githubUrl    String?
   linkedinUrl  String?
   technologies String[]
