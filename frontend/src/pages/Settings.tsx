@@ -121,7 +121,7 @@ export const Settings = () => {
             className="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-3xl border border-white/20 rounded-2xl hover:bg-white/20 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest text-white cursor-pointer shadow-2xl"
           >
             {uploadingBanner ? <Loader2 className="animate-spin" size={14}/> : <Camera size={14} className="text-blue-500" />}
-            {uploadingBanner ? 'Sincronizando...' : 'Update_Cover_Art'}
+            {uploadingBanner ? 'Sincronizando...' : 'Atualizar'}
           </button>
         </div>
       </section>

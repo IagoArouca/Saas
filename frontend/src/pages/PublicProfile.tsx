@@ -211,8 +211,8 @@ export const PublicProfile = () => {
           <SectionWrapper id="stack" index={1} setActiveSection={setActiveSection}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               <div>
-                <h2 className="text-blue-500 font-mono tracking-[0.5em] uppercase text-xs mb-6">Expertise</h2>
-                <h3 className="text-5xl font-black italic uppercase tracking-tighter text-white">Tecnologias</h3>
+                <h2 className="text-blue-500 font-mono tracking-[0.5em] uppercase text-xs mb-6">ESPECIALIDADES</h2>
+                <h3 className="text-5xl font-black italic uppercase tracking-tighter text-white">TÉCNICAS</h3>
               </div>
               <div className="md:col-span-2 grid grid-cols-2 gap-4">
                 {profile.technologies?.map((tech: string) => (
@@ -276,7 +276,7 @@ export const PublicProfile = () => {
                 </div>
                 <div className="text-center">
                   <span className="block font-mono text-[10px] uppercase tracking-[0.5em] text-zinc-500 group-hover:text-white transition-colors mb-2">
-                    Accessar todos projetos
+                    Acessar todos os projetos
                   </span>
                   {hasArchive && (
                     <span className="text-[9px] text-blue-500/50 font-bold uppercase tracking-widest">
@@ -295,7 +295,7 @@ export const PublicProfile = () => {
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                 <h3 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-none">
-                  Vamos Construir<br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-400"> o Futuro</span>
+                  Vamos Construir<br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-emerald-400"> o Futuro juntos</span>
                 </h3>
                 <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-12 space-y-8">
                   <div className="grid gap-4">
@@ -326,7 +326,7 @@ export const PublicProfile = () => {
                       </a>
                     )}
                   </div>
-                  <button onClick={handleStartChat} className="w-full py-6 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 text-xs">
+                  <button onClick={handleStartChat} className="w-full py-6 bg-emerald-500 text-black font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 text-xs cursor-pointer">
                     <MessageSquare size={18} /> Estabelecer Conexão
                   </button>
                 </div>

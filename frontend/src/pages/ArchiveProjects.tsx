@@ -68,12 +68,12 @@ export const ArchiveProjects = () => {
             className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors"
           >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-xs font-black uppercase tracking-widest">Return_to_Dossier</span>
+            <span className="text-xs font-black uppercase tracking-widest">Retornar</span>
           </button>
           
           <div className="flex items-center gap-4">
             <div className="hidden md:block text-right">
-              <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">Vault_Access</p>
+              
               <p className="text-xs text-zinc-500 uppercase font-mono">@{profile.username}</p>
             </div>
             <img src={profile.avatar} className="w-10 h-10 rounded-lg border border-white/10" alt="" />
@@ -86,10 +86,10 @@ export const ArchiveProjects = () => {
         <div className="mb-20">
           <div className="flex items-center gap-4 mb-4">
              <Layers className="text-blue-500" size={24} />
-             <span className="text-blue-500 font-mono text-xs tracking-[0.5em] uppercase">Deep_Archive_Logs</span>
+             <span className="text-blue-500 font-mono text-xs tracking-[0.5em] uppercase">Inventário_De_Projetos</span>
           </div>
           <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-none mb-6">
-            Project_Inventory<span className="text-blue-500">.</span>
+            Projetos
           </h1>
           <p className="text-zinc-400 max-w-xl text-lg">
             Exploração completa de módulos desenvolvidos, arquiteturas de sistema e protótipos experimentais que compõem o ecossistema técnico.
@@ -103,7 +103,7 @@ export const ArchiveProjects = () => {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-blue-500 transition-colors" size={18} />
               <input 
                 type="text"
-                placeholder="Search_Archive..."
+                placeholder="Pesquisar..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 outline-none focus:border-blue-500/50 focus:bg-white/[0.08] transition-all font-mono text-sm"
@@ -131,7 +131,7 @@ export const ArchiveProjects = () => {
         {/* Results Info */}
         <div className="flex items-center gap-4 mb-8 text-zinc-500 font-mono text-[10px] uppercase tracking-widest">
            <LayoutGrid size={14} />
-           <span>Showing {archiveProjects.length} Artifacts</span>
+           <span>Exibindo {archiveProjects.length} projetos</span>
            <div className="h-px flex-1 bg-white/5" />
         </div>
 

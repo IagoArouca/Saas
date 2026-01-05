@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import api from '../services/api'; 
+import { useFocus } from '../contexts/FocusContext'; // Importando o contexto global
 import { 
   Calendar, Clock, Zap, Play, Square, 
-  RefreshCcw, Edit3, Save, Terminal, Trash2
+  RefreshCcw, Edit3, Save, Terminal, Trash2, Loader2
 } from 'lucide-react';
 
 const initialSchedule = [
@@ -13,34 +15,66 @@ const initialSchedule = [
 ];
 
 export const WeeklyOrchestrator = () => {
+  // --- ESTADOS DO CRONOGRAMA ---
   const [schedule, setSchedule] = useState(initialSchedule);
   const [isEditing, setIsEditing] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isActive, setIsActive] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  // --- CONSUMINDO O TIMER GLOBAL ---
+  const { timeLeft, isActive, setIsActive, resetTimer, formatTime } = useFocus();
+
+  // --- 1. CARREGAR DO BANCO DE DADOS ---
   useEffect(() => {
-    let interval: any = null;
-    if (isActive && timeLeft > 0) {
-      interval = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
-    } else if (timeLeft === 0) {
-      clearInterval(interval);
-      alert("Sessão de Foco Finalizada!");
-      setIsActive(false);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, timeLeft]);
+    const fetchSchedule = async () => {
+      try {
+        const res = await api.get('/schedule/my-schedule');
+        if (res.data && res.data.length > 0) {
+          const dbData = res.data;
+          const mappedSchedule = initialSchedule.map((day, index) => {
+            const serverDay = dbData.find((item: any) => item.dayOfWeek === index);
+            return {
+              ...day,
+              tasks: serverDay ? serverDay.subject.split(',') : ['', '', '', '']
+            };
+          });
+          setSchedule(mappedSchedule);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar cronograma:", err);
+      }
+    };
+    fetchSchedule();
+  }, []);
 
-  const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  // --- 2. SALVAR NO BANCO DE DADOS ---
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const savePromises = schedule.map((day, index) => {
+        return api.post('/schedule/block', {
+          dayOfWeek: index,
+          subject: day.tasks.join(','),
+          startTime: "00:00",
+          endTime: "00:00"
+        });
+      });
+
+      await Promise.all(savePromises);
+      setIsEditing(false);
+      alert("Cronograma sincronizado com sucesso!");
+    } catch (err) {
+      console.error("Erro ao salvar:", err);
+      alert("Falha ao salvar no banco de dados.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleTaskChange = (dayId: string, taskIndex: number, newValue: string) => {
     setSchedule(schedule.map(day => {
       if (day.id === dayId) {
         const newTasks = [...day.tasks];
-        newTasks[taskIndex] = newValue.slice(0, 15);
+        newTasks[taskIndex] = newValue.slice(0, 20);
         return { ...day, tasks: newTasks };
       }
       return day;
@@ -56,7 +90,7 @@ export const WeeklyOrchestrator = () => {
   return (
     <section className="max-w-7xl mx-auto px-6 pb-20 animate-in fade-in duration-1000">
       
-      {/* 1. SEÇÃO POMODORO */}
+      {/* 1. SEÇÃO POMODORO (CONECTADA AO CONTEXTO) */}
       <div className="mb-16 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center bg-slate-900/40 border border-slate-800 p-8 rounded-2xl backdrop-blur-md">
         <div className="flex items-center gap-4">
           <div className="p-4 bg-blue-600 rounded-xl shadow-lg shadow-blue-600/30">
@@ -83,14 +117,14 @@ export const WeeklyOrchestrator = () => {
         <div className="flex justify-center lg:justify-end gap-3">
           <button 
             onClick={() => setIsActive(!isActive)}
-            className={`p-4 rounded-xl flex items-center gap-2 font-bold transition-all ${isActive ? 'bg-amber-500 text-slate-950' : 'bg-emerald-500 text-slate-950 hover:scale-105'}`}
+            className={`cursor-pointer p-4 rounded-xl flex items-center gap-2 font-bold transition-all ${isActive ? 'bg-amber-500 text-slate-950' : 'bg-emerald-500 text-slate-950 hover:scale-105'}`}
           >
             {isActive ? <Square size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
             {isActive ? 'PARAR' : 'INICIAR'}
           </button>
           <button 
-            onClick={() => { setIsActive(false); setTimeLeft(25 * 60); }}
-            className="p-4 bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-all"
+            onClick={resetTimer}
+            className="cursor-pointer p-4 bg-slate-800 rounded-xl text-slate-400 hover:text-white transition-all"
           >
             <RefreshCcw size={20} />
           </button>
@@ -107,23 +141,24 @@ export const WeeklyOrchestrator = () => {
         <div className="flex gap-3">
           <button 
             onClick={clearSchedule}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
+            className="cursor-pointer flex items-center gap-2 px-6 py-3 rounded-xl font-bold bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/20"
           >
             <Trash2 size={18} />
-            LIMPAR DISCIPLINAS
+            LIMPAR
           </button>
 
           <button 
-            onClick={() => setIsEditing(!isEditing)}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-xl ${isEditing ? 'bg-emerald-600 text-white shadow-emerald-900/20' : 'bg-blue-600 text-white shadow-blue-900/20'}`}
+            onClick={isEditing ? handleSave : () => setIsEditing(true)}
+            disabled={loading}
+            className={`cursor-pointer flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shadow-xl ${isEditing ? 'bg-emerald-600 text-white shadow-emerald-900/20' : 'bg-blue-600 text-white shadow-blue-900/20'}`}
           >
-            {isEditing ? <Save size={18} /> : <Edit3 size={18} />}
-            {isEditing ? 'SALVAR ALTERAÇÕES' : 'EDITAR MÓDULOS'}
+            {loading ? <Loader2 className="animate-spin" size={18} /> : (isEditing ? <Save size={18} /> : <Edit3 size={18} />)}
+            {loading ? 'SALVANDO...' : (isEditing ? 'CONFIRMAR' : 'EDITAR CRONOGRAMA')}
           </button>
         </div>
       </div>
 
-      {/* 3. COLUNAS DO CRONOGRAMA (Arredondamento Ajustado) */}
+      {/* 3. COLUNAS DO CRONOGRAMA */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         {schedule.map((day) => (
           <div 
@@ -157,13 +192,6 @@ export const WeeklyOrchestrator = () => {
                   )}
                 </div>
               ))}
-            </div>
-
-            <div className="mt-8 flex justify-between items-center opacity-20 group-hover:opacity-100 transition-opacity">
-               <Zap size={14} className="text-blue-500" />
-               <div className="flex gap-1">
-                  {[1,2].map(i => <div key={i} className="w-1 h-1 rounded-full bg-slate-700" />)}
-               </div>
             </div>
           </div>
         ))}

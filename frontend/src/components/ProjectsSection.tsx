@@ -106,7 +106,7 @@ export const ProjectsSection = () => {
           className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl transition-all font-bold shadow-xl shadow-blue-900/20 group border border-blue-400/20"
         >
           <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-          <span className="tracking-widest text-sm">Criar</span>
+          <span className="cursor-pointer tracking-widest text-sm">Criar</span>
         </button>
       </div>
 
@@ -136,7 +136,7 @@ export const ProjectsSection = () => {
               {/* Botão de Estrela (Destaque) */}
               <button 
                 onClick={() => handleToggleHighlight(proj)}
-                className={`absolute top-3 right-3 z-30 p-2.5 rounded-xl backdrop-blur-md border transition-all ${
+                className={`cursor-pointer absolute top-3 right-3 z-30 p-2.5 rounded-xl backdrop-blur-md border transition-all ${
                   proj.isHighlighted 
                   ? 'bg-yellow-500/20 border-yellow-500/40 text-yellow-500 scale-110 shadow-lg shadow-yellow-500/10' 
                   : 'bg-slate-950/60 border-white/10 text-slate-400 hover:text-white'
@@ -182,7 +182,7 @@ export const ProjectsSection = () => {
                 
                 <button 
                   onClick={() => confirm("Destruir módulo do sistema?") && projectService.delete(proj.id).then(loadProjects)} 
-                  className="text-slate-600 hover:text-red-500 transition-all p-2 hover:bg-red-500/5 rounded-lg"
+                  className="cursor-pointer text-slate-600 hover:text-red-500 transition-all p-2 hover:bg-red-500/5 rounded-lg"
                 >
                   <Trash2 size={16} />
                 </button>
