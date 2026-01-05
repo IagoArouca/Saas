@@ -13,8 +13,10 @@ import { RecruiterDashboard } from './pages/RecruiterDashboard';
 import { CreatorDashboard } from './pages/CreatorDashboard'; 
 import { MyVideos } from './pages/MyVideos'; 
 import { PublicProfile } from './pages/PublicProfile';
+import { PerfilPublicoRecruiter} from './pages/PerfilPublicoRecruiter';
 import { ArchiveProjects } from './pages/ArchiveProjects'; 
 import { Settings } from './pages/Settings';
+import { SettingsRecruiter } from './pages/SettingsRecruiter';
 import { Chat } from './pages/Chat';
 import { ExploreProjects } from './pages/ExploreProjects'; 
 import { StudyTracks } from './pages/StudyTracks';
@@ -37,7 +39,7 @@ export const App = () => {
 
   return (
     <HelmetProvider>
-      <FocusProvider> {/* O Timer agora vive aqui em cima e não morre nas trocas de rota */}
+      <FocusProvider>
         <BrowserRouter>
           {token && <SocketNotification />}
 
@@ -49,7 +51,13 @@ export const App = () => {
             />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/p/:username" element={<PublicProfile />} />
+            
+            {/* Perfil Público Dinâmico */}
+            <Route 
+              path="/p/:username" 
+              element={user?.role === 'RECRUITER' ? <PerfilPublicoRecruiter /> : <PublicProfile />} 
+            />
+            
             <Route path="/archive/:username" element={<ArchiveProjects />} />
 
             {/* ROTAS PROTEGIDAS */}
@@ -93,7 +101,11 @@ export const App = () => {
               
               <Route 
                 path="/dashboard/profile" 
-                element={<DashboardLayout><PublicProfile /></DashboardLayout>} 
+                element={
+                  <DashboardLayout>
+                    {user?.role === 'RECRUITER' ? <PerfilPublicoRecruiter /> : <PublicProfile />}
+                  </DashboardLayout>
+                } 
               />
 
               <Route 
@@ -103,7 +115,11 @@ export const App = () => {
               
               <Route 
                 path="/dashboard/settings" 
-                element={<DashboardLayout><Settings /></DashboardLayout>} 
+                element={
+                  <DashboardLayout>
+                    {user?.role === 'RECRUITER' ? <SettingsRecruiter /> : <Settings />}
+                  </DashboardLayout>
+                } 
               />
 
               <Route 

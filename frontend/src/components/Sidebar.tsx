@@ -40,7 +40,7 @@ export const Sidebar = () => {
       show: isDev 
     },
     { 
-      name: 'Explorar', 
+      name: isRecruiter ? 'Explorar Devs' : 'Explorar', 
       icon: Search, 
       path: '/dashboard/explore', 
       show: isDev || isRecruiter 
@@ -51,12 +51,11 @@ export const Sidebar = () => {
       path: '/dashboard/my-videos', 
       show: isCreator 
     },
-    // Este item agora só aparece para o Creator para evitar o erro de undefined no Dev
     { 
-      name: 'Ver Perfil Público', 
+      name: isRecruiter ? 'Meu Perfil Público' : 'Ver Perfil Público', 
       icon: Globe, 
       path: `/p/${user?.username || user?.profile?.username}`,
-      show: isCreator && (user?.username || user?.profile?.username)
+      show: (user?.username || user?.profile?.username)
     },
     { 
       name: 'Mensagens', 
@@ -66,7 +65,7 @@ export const Sidebar = () => {
       show: !isCreator 
     },
     { 
-      name: 'Meu Perfil', // Restaurado o nome e ícone padrão para o Dev
+      name: isRecruiter ? 'Dados da Empresa' : 'Meu Perfil', 
       icon: UserCircle, 
       path: '/dashboard/profile',
       show: true 
@@ -77,7 +76,6 @@ export const Sidebar = () => {
       path: '/dashboard/settings',
       show: true 
     },
-    
   ];
 
   return (
@@ -97,7 +95,9 @@ export const Sidebar = () => {
             className={({ isActive }) => `
               flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative
               ${isActive 
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' 
+                ? isRecruiter 
+                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' 
+                  : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                 : 'text-slate-400 hover:bg-slate-900 hover:text-white'
               }
             `}
@@ -114,7 +114,7 @@ export const Sidebar = () => {
       <div className="p-4 border-t border-slate-800">
         <button 
           onClick={logout}
-          className="flex items-center gap-3 w-full px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
+          className="cursor-pointer flex items-center gap-3 w-full px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
         >
           <LogOut size={20} />
           <span className="text-sm font-medium">Sair</span>

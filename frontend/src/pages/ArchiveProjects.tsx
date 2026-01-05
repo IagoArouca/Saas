@@ -68,7 +68,7 @@ export const ArchiveProjects = () => {
             className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors"
           >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-xs font-black uppercase tracking-widest">Retornar</span>
+            <span className="text-xs font-black uppercase tracking-widest ">Retornar</span>
           </button>
           
           <div className="flex items-center gap-4">
