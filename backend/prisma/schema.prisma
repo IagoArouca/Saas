@@ -23,6 +23,7 @@ model User {
   createdAt DateTime @default(now())
   
   profile   Profile?
+  recruiterProfile RecruiterProfile?
   videos    VideoContent[] 
   projects Project[]
   studySchedules StudySchedule[]
@@ -51,6 +52,33 @@ model Profile {
   technologies String[]
   user         User    @relation(fields: [userId], references: [id])
   userId       String  @unique
+}
+model RecruiterProfile {
+  id                String   @id @default(uuid())
+  username          String   @unique
+  fullName          String?
+  avatar            String?
+  bannerUrl         String?
+  bio               String?
+  role              String?  // Ex: Senior Tech Recruiter
+  companyName       String?
+  companySize       String?
+  location          String?
+  linkedinUrl       String?
+  websiteUrl        String?
+  technologies      String[] // Stacks que ele contrata
+  benefits          String[]
+  hiringProcess     String?
+  companyValues     String?
+  
+  // Métricas
+  experienceYears      Int?    @default(0)
+  hiringStats_count    Int?    @default(0)
+  hiringStats_projects Int?    @default(0)
+  hiringStats_time     Int?    @default(0)
+
+  user              User     @relation(fields: [userId], references: [id])
+  userId            String   @unique
 }
 model ProfileVisit {
   id        String   @id @default(uuid())
