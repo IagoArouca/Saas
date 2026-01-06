@@ -1,15 +1,4 @@
-import { 
-  LayoutDashboard, 
-  MessageSquare, 
-  Search, 
-  Settings, 
-  LogOut, 
-  Folder, 
-  UserCircle,
-  Globe,
-  Video,
-  BookOpen
-} from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Search, Settings, LogOut, Folder, UserCircle, Globe, Video, BookOpen } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 
@@ -27,55 +16,33 @@ export const Sidebar = () => {
       path: isCreator ? '/dashboard/creator' : isRecruiter ? '/dashboard/recruiter' : '/dashboard/dev',
       show: true 
     },
+    { name: 'Meus Projetos', icon: Folder, path: '/dashboard/projects', show: isDev },
+    { name: 'Trilha de Estudo', icon: BookOpen, path: '/dashboard/tracks', show: isDev },
     { 
-      name: 'Meus Projetos', 
-      icon: Folder, 
-      path: '/dashboard/projects',
-      show: isDev 
+      name: 'Mensagens', 
+      icon: MessageSquare, 
+      path: '/dashboard/chat', 
+      show: isDev || isRecruiter 
     },
     { 
-      name: 'Trilha de Estudos', 
-      icon: BookOpen, 
-      path: '/dashboard/study-tracks',
-      show: isDev 
-    },
-    { 
-      name: isRecruiter ? 'Explorar Devs' : 'Explorar', 
+      name: isRecruiter ? 'Explorar' : 'Explorar projetos', 
       icon: Search, 
       path: '/dashboard/explore', 
       show: isDev || isRecruiter 
     },
     { 
-      name: 'Meus Vídeos', 
-      icon: Video, 
-      path: '/dashboard/my-videos', 
-      show: isCreator 
-    },
-    { 
       name: isRecruiter ? 'Meu Perfil Público' : 'Ver Perfil Público', 
       icon: Globe, 
-      path: `/p/${user?.username || user?.profile?.username}`,
-      show: (user?.username || user?.profile?.username)
+      path: `/p/${user?.username}`,
+      show: !!user?.username
     },
     { 
-      name: 'Mensagens', 
-      icon: MessageSquare, 
-      path: '/dashboard/chat', 
-      badge: hasUnreadMessages,
-      show: !isCreator 
-    },
-    { 
-      name: isRecruiter ? 'Dados da Empresa' : 'Meu Perfil', 
+      name: isRecruiter ? 'Meu Perfil' : 'Meu Perfil', 
       icon: UserCircle, 
       path: '/dashboard/profile',
       show: true 
     },
-    { 
-      name: 'Configurações', 
-      icon: Settings, 
-      path: '/dashboard/settings',
-      show: true 
-    },
+    { name: 'Configurações', icon: Settings, path: '/dashboard/settings', show: true },
   ];
 
   return (
@@ -85,37 +52,31 @@ export const Sidebar = () => {
       </div>
 
       <nav className="flex-1 px-4 space-y-2">
-        {menuItems
-          .filter(item => item.show) 
-          .map((item) => (
+        {menuItems.filter(item => item.show).map((item) => (
           <NavLink
             key={item.name}
             to={item.path}
-            onClick={() => item.name === 'Mensagens' && setHasUnreadMessages(false)}
             className={({ isActive }) => `
               flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative
               ${isActive 
-                ? isRecruiter 
-                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20' 
-                  : 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                ? isRecruiter ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white'
                 : 'text-slate-400 hover:bg-slate-900 hover:text-white'
               }
             `}
           >
             <item.icon size={20} />
             <span className="font-medium text-sm">{item.name}</span>
-            {item.badge && (
-              <span className="absolute right-4 w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+            
+            {/* Indicador visual de mensagens não lidas se necessário futuramente */}
+            {item.name === 'Mensagens' && hasUnreadMessages && (
+              <span className="absolute right-4 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
             )}
           </NavLink>
         ))}
       </nav>
 
       <div className="p-4 border-t border-slate-800">
-        <button 
-          onClick={logout}
-          className="cursor-pointer flex items-center gap-3 w-full px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
-        >
+        <button onClick={logout} className="flex items-center gap-3 w-full px-4 py-3 text-slate-400 hover:text-red-400 rounded-xl transition-all cursor-pointer">
           <LogOut size={20} />
           <span className="text-sm font-medium">Sair</span>
         </button>

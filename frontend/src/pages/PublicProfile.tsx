@@ -243,7 +243,7 @@ export const PublicProfile = () => {
                   <div className="flex flex-wrap items-center gap-8">
                     {project.githubUrl && (
                       <a href={project.githubUrl} target="_blank" rel="noreferrer" className="group flex items-center gap-4 text-xs font-black uppercase tracking-widest hover:text-blue-500 transition-all">
-                        <Github size={14} /> <span>Deploy</span>
+                        <Github size={14} /> <span>Github</span>
                         <div className="h-px w-8 bg-white/20 group-hover:w-16 group-hover:bg-blue-500 transition-all" />
                       </a>
                     )}
@@ -262,10 +262,10 @@ export const PublicProfile = () => {
             </SectionWrapper>
           ))}
 
-          {/* Archive Link */}
+          {/* Archive Link - BOTÃO CORRIGIDO AQUI */}
           <div className="py-32 flex flex-col items-center justify-center border-t border-white/5 bg-[#020203]">
               <button 
-                onClick={() => { if (profile?.username) navigate(`/archive/${profile.username}`); }} 
+                onClick={() => { if (profile?.username) navigate(`/p/${profile.username}/archive`); }} 
                 className="group flex flex-col items-center gap-6 cursor-pointer"
               >
                 <div className="relative">
@@ -302,7 +302,7 @@ export const PublicProfile = () => {
                     {profile.githubUrl && (
                       <a href={profile.githubUrl} target="_blank" rel="noreferrer" className="flex items-center justify-between p-6 bg-black/40 border border-white/5 rounded-2xl hover:border-white transition-all group">
                         <div className="flex items-center gap-4"><Github size={20} /><span className="font-bold uppercase tracking-tighter text-sm">Github</span></div>
-                        <ExternalLink size={14} className="opacity-20 group-hover:opacity-100" />
+                        <div className="h-px w-8 bg-white/20 group-hover:w-16 group-hover:bg-blue-500 transition-all" />
                       </a>
                     )}
                     {profile.linkedinUrl && (
@@ -312,7 +312,6 @@ export const PublicProfile = () => {
                       </a>
                     )}
                     
-                    {/* PUXA O E-MAIL DO CAMPO 'EMAIL' SALVO NO PERFIL */}
                     {profile.email && (
                       <a href={`mailto:${profile.email}`} className="flex items-center justify-between p-6 bg-black/40 border border-white/5 rounded-2xl hover:border-emerald-500 transition-all group">
                         <div className="flex items-center gap-4">
