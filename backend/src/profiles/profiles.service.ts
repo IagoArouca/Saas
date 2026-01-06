@@ -15,6 +15,7 @@ export class ProfilesService {
   async update(userId: string, data: any) {
     if (!userId) throw new BadRequestException('ID do usuário é obrigatório');
 
+    // 1. Busca o usuário para verificar o Role
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { role: true }
@@ -22,9 +23,17 @@ export class ProfilesService {
 
     if (!user) throw new NotFoundException('Usuário não encontrado');
 
-    // Validação de Username único em ambas as tabelas
+    // Helper para formatar campos que vêm como string ou array do front
+    const formatArray = (val: any) => {
+      if (Array.isArray(val)) return val;
+      if (typeof val === 'string') return val.split(',').map(i => i.trim()).filter(i => i !== "");
+      return [];
+    };
+
+    // 2. Validação de Username Único (Check em ambas as tabelas)
     if (data.username) {
-      const usernameLower = data.username.toLowerCase();
+      const usernameLower = data.username.toLowerCase().trim();
+      
       const existingDev = await this.prisma.profile.findFirst({
         where: { username: usernameLower, NOT: { userId } },
       });
@@ -38,40 +47,76 @@ export class ProfilesService {
       data.username = usernameLower;
     }
 
-    // LÓGICA PARA RECRUTADOR
+    // 3. Lógica específica para RECRUITER
     if (user.role === 'RECRUITER') {
       const recruiterData = {
-        ...data,
-        // Garante que tecnologias e benefícios sejam salvos como Array
-        technologies: Array.isArray(data.technologies) ? data.technologies : [],
-        benefits: Array.isArray(data.benefits) ? data.benefits : [],
-        // Conversão rigorosa de tipos numéricos para evitar Erro 500
-        experienceYears: data.experienceYears ? Number(data.experienceYears) : 0,
-        hiringStats_count: data.hiringStats_count ? Number(data.hiringStats_count) : 0,
-        hiringStats_projects: data.hiringStats_projects ? Number(data.hiringStats_projects) : 0,
-        hiringStats_time: data.hiringStats_time ? Number(data.hiringStats_time) : 0,
+        username: data.username, // CRUCIAL: Agora incluído no objeto de dados
+        fullName: data.fullName,
+        bio: data.bio,
+        companyName: data.companyName,
+        companySize: data.companySize,
+        location: data.location,
+        linkedinUrl: data.linkedinUrl,
+        websiteUrl: data.websiteUrl,
+        companyValues: data.companyValues,
+        hiringProcess: data.hiringProcess,
+        role: data.role,
+        technologies: formatArray(data.technologies),
+        benefits: formatArray(data.benefits),
+        openPositions: data.openPositions || [], 
+        experienceYears: Number(data.experienceYears) || 0,
+        hiringStats_count: Number(data.hiringStats_count) || 0,
+        hiringStats_projects: Number(data.hiringStats_projects) || 0,
+        hiringStats_time: Number(data.hiringStats_time) || 0,
+        avatar: data.avatar,
+        bannerUrl: data.bannerUrl,
       };
 
       return this.prisma.recruiterProfile.upsert({
         where: { userId },
-        update: recruiterData,
-        create: { ...recruiterData, userId },
+        update: recruiterData, // Atualiza se existir
+        create: { 
+          ...recruiterData, 
+          userId,
+          username: data.username || `recruiter_${userId.slice(0, 5)}`
+        },
       });
     }
 
-    // LÓGICA PARA DEV
+    // 4. Lógica para DEV (Profile padrão)
     return this.prisma.profile.update({
       where: { userId },
-      data,
+      data: {
+        ...data,
+        username: data.username, // Garante que o username atualize aqui também
+        technologies: formatArray(data.technologies)
+      },
     });
   }
 
   /**
-   * Atualização de Avatar com Type Guard
+   * Busca o perfil completo (Me) com base no Role
+   */
+  async getByUserId(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { profile: true, recruiterProfile: true }
+    });
+
+    if (!user) throw new NotFoundException('Usuário não encontrado');
+    
+    // Retorna o perfil correto dependendo do tipo de conta
+    const profile = user.role === 'RECRUITER' ? user.recruiterProfile : user.profile;
+    
+    if (!profile) return { role: user.role, userId: user.id };
+    return { ...profile, role: user.role };
+  }
+
+  /**
+   * Atualiza apenas o Avatar
    */
   async updateAvatar(userId: string, avatarUrl: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    
     if (!user) throw new NotFoundException('Usuário não encontrado');
 
     if (user.role === 'RECRUITER') {
@@ -93,83 +138,57 @@ export class ProfilesService {
   }
 
   /**
-   * Atualização de Banner com Type Guard
+   * Atualiza apenas o Banner
    */
   async updateBanner(userId: string, bannerUrl: string) {
-  const user = await this.prisma.user.findUnique({ where: { id: userId } });
-  if (!user) throw new NotFoundException('Usuário não encontrado');
-
-  if (user.role === 'RECRUITER') {
-    return this.prisma.recruiterProfile.upsert({
-      where: { userId },
-      update: { bannerUrl: bannerUrl }, // Certifique-se que o nome bate com o Prisma
-      create: { 
-        userId, 
-        bannerUrl: bannerUrl, 
-        username: `recruiter_${userId.slice(0, 5)}` 
-      }
-    });
-  }
-
-  // Se for DEV
-  return this.prisma.profile.update({
-    where: { userId },
-    data: { bannerUrl: bannerUrl }
-  });
-}
-
-  /**
-   * Busca o perfil do usuário logado (usado no Settings)
-   */
-  async getByUserId(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        profile: true,
-        recruiterProfile: true,
-      }
-    });
-
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
 
-    const profile = user.role === 'RECRUITER' ? user.recruiterProfile : user.profile;
-    
-    // Se o perfil ainda não existir, retornamos o básico para não quebrar o Front
-    if (!profile) {
-       return { role: user.role, userId: user.id };
+    if (user.role === 'RECRUITER') {
+      return this.prisma.recruiterProfile.upsert({
+        where: { userId },
+        update: { bannerUrl: bannerUrl },
+        create: { 
+          userId, 
+          bannerUrl: bannerUrl, 
+          username: `recruiter_${userId.slice(0, 5)}` 
+        }
+      });
     }
 
-    return { ...profile, role: user.role };
+    return this.prisma.profile.update({
+      where: { userId },
+      data: { bannerUrl: bannerUrl }
+    });
   }
 
   /**
-   * Busca perfil público (Username em qualquer tabela)
+   * Busca Perfil Público por Username (Slug)
    */
   async findPublicProfile(username: string, ip: string) {
-    // Procura primeiro em Recrutadores
-    let profile: any = await this.prisma.recruiterProfile.findUnique({
+    // Tenta encontrar como Recrutador primeiro
+    const recruiter = await this.prisma.recruiterProfile.findUnique({
       where: { username },
       include: { user: true }
     });
 
-    // Se não for recrutador, busca em Devs
-    if (!profile) {
-      profile = await this.prisma.profile.findUnique({
-        where: { username },
-        include: { user: { include: { projects: true } } }
-      });
+    if (recruiter) {
+      return { ...recruiter, type: 'RECRUITER' };
     }
 
-    if (!profile) throw new NotFoundException(`@${username} não encontrado`);
+    // Se não for recrutador, busca como Dev
+    const dev = await this.prisma.profile.findUnique({
+      where: { username },
+      include: { user: { include: { projects: true } } }
+    });
 
-    // Log de visita
+    if (!dev) throw new NotFoundException('Perfil não encontrado');
+
+    // Registra a visita (opcional)
     this.prisma.profileVisit.create({
-      data: { profileId: profile.id, ip: ip || 'unknown' }
+      data: { profileId: dev.id, ip: ip || 'unknown' }
     }).catch(() => null);
 
-    return {
-      ...profile,
-      projects: profile.user?.projects || []
-    };
+    return { ...dev, projects: dev.user?.projects || [], type: 'DEV' };
   }
 }

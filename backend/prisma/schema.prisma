@@ -70,6 +70,7 @@ model RecruiterProfile {
   benefits          String[]
   hiringProcess     String?
   companyValues     String?
+  openPositions        Json?    @default("[]")
   
   // Métricas
   experienceYears      Int?    @default(0)
