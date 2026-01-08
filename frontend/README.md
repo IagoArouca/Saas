@@ -1,73 +1,76 @@
-# React + TypeScript + Vite
+📑 Resumo do Sistema
+O LuzDo Dev é uma plataforma de conexão bilateral entre desenvolvedores e recrutadores. O sistema utiliza uma interface de alta fidelidade visual para transformar perfis técnicos em experiências imersivas, facilitando o recrutamento através de dados estruturados e comunicação em tempo real.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🛠️ Arquitetura Tecnológica
+Frontend
+React + TypeScript (Interface reativa e tipagem estática)
 
-Currently, two official plugins are available:
+Tailwind CSS (Estilização utilitária de alta performance)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Lucide React (Pacote de ícones minimalistas)
 
-## React Compiler
+Zustand (Gerenciamento de estado leve e escalável)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Framer Motion (Animações e transições de interface)
 
-## Expanding the ESLint configuration
+Backend & Database
+Node.js (Ambiente de execução)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Prisma ORM (Modelagem de dados e queries seguras)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+PostgreSQL (Banco de dados relacional robusto)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Socket.io (Comunicação em tempo real para o Chat)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+🧬 Modelagem de Dados (Schema)
+O sistema opera com três identidades principais definidas via Enums:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+DEV: Focado em portfólio, tecnologias e vitrine de projetos.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+RECRUITER: Focado em vagas ativas, estatísticas de contratação e cultura da empresa.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+CONTENT_CREATOR: Focado em disseminação de conhecimento técnico.
+
+🚀 Funcionalidades Chave
+Para Desenvolvedores
+Briefing Visual: Bio personalizada com estética terminal.
+
+Tech Stack: Exibição dinâmica de especialidades técnicas.
+
+Project Archive: Galeria de projetos com integração direta ao GitHub e Deploy Live.
+
+Para Recrutadores
+Dashboard de Contratação: Métricas de tempo médio de contratação e volume de projetos.
+
+Active Positions: Listagem de vagas com requisitos chave e diferenciais.
+
+Direct Pipeline: Sistema de chat integrado para estabelecer conexões imediatas.
+
+💻 Instalação e Setup
+Clonar o Repositório:
+
+Bash
+
+git clone https://github.com/seu-usuario/seu-repositorio.git
+Configurar Variáveis de Ambiente: Crie um arquivo .env na raiz do backend e adicione sua URL do banco:
+
+Snippet de código
+
+DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"
+Instalar Dependências e Migrar Banco:
+
+Bash
+
+npm install
+npx prisma migrate dev
+Executar em Modo Desenvolvimento:
+
+Bash
+
+npm run dev
+🔒 Segurança e Protocolos
+Autenticação via JWT.
+
+Proteção de rotas privadas.
+
+Validação de esquemas de dados com Zod/Prisma.
