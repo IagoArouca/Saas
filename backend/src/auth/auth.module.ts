@@ -11,7 +11,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     UsersModule,
     PassportModule,
     JwtModule.register({
-      secret: process.env.Jwt_SECRET || 'chave-secreta-muito-forte',
+      secret: process.env.JWT_SECRET || 'chave-secreta-muito-forte',
       signOptions: { expiresIn: '7d' },
     }),
   ],
