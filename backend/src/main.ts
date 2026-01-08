@@ -8,21 +8,19 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'https://saas-enqwhvbhp-iago-aroucas-projects.vercel.app', 
-      'saas-pied-mu.vercel.app',
+      'https://saas-pied-mu.vercel.app', 
       'https://saas-iago-aroucas.vercel.app', 
-      'http://localhost:3000',
-      'http://localhost:5173'
+      'http://localhost:5173',
+      'http://localhost:3000'
     ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
-    allowedHeaders: 'Content-Type, Accept, Authorization',
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   const port = process.env.PORT || 10000;
-  
   await app.listen(port, '0.0.0.0');
-  
-  console.log(`Application is running on port: ${port}`);
 }
 bootstrap();
