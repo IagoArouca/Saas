@@ -9,12 +9,6 @@ import { Role } from '@prisma/client';
 @UseGuards(JwtAuthGuard)
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
-
-  /**
-   * Envio de mensagem (Híbrido)
-   * Se enviar conversationId: Responde a um chat existente.
-   * Se enviar receiverId: Tenta iniciar um novo chat (Validado no Service).
-   */
   @Post('send')
   async send(
     @Request() req: any,
@@ -24,7 +18,6 @@ export class ChatController {
       content: string;
     },
   ) {
-    // Usamos 'req.user.id' porque corrigimos a JwtStrategy para retornar 'id'
     return this.chatService.sendMessage(
       req.user.id,
       req.user.role,
@@ -33,18 +26,10 @@ export class ChatController {
       body.receiverId,
     );
   }
-
-  /**
-   * Lista todas as conversas do usuário logado
-   */
   @Get('my-chats')
   async getMyChats(@Request() req: any) {
     return this.chatService.getMyConversations(req.user.id);
   }
-
-  /**
-   * Endpoint explícito para recrutadores iniciarem conversa (opcional)
-   */
   @Post('initiate')
   @UseGuards(RolesGuard)
   @Roles(Role.RECRUITER)

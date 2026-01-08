@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { StudyTrackService } from './study.service'; // Nome que definimos no arquivo anterior
-import { StudyTrackController } from './study.controller'; // Nome que definimos no arquivo anterior
-import { PrismaService } from '../prisma/prisma.service'; // Ajuste o caminho se necessário
+import { StudyTrackService } from './study.service'; 
+import { StudyTrackController } from './study.controller'; 
+import { PrismaService } from '../prisma/prisma.service'; 
 
 @Module({
-  // Os nomes aqui devem ser EXATAMENTE iguais aos nomes das classes exportadas
   controllers: [StudyTrackController],
   providers: [StudyTrackService, PrismaService],
-  exports: [StudyTrackService] // Exportar caso outro módulo precise usar
+  exports: [StudyTrackService] 
 })
 export class StudyModule {}

@@ -19,7 +19,6 @@ export class ScheduleController {
 
   @Post('block')
   async addBlock(@Request() req: any, @Body() data: any) {
-    // A sua JwtStrategy retorna 'id', então acessamos via req.user.id
     const userId = req.user.id;
 
     if (!userId) {

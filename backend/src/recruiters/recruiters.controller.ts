@@ -1,4 +1,3 @@
-// src/recruiters/recruiters.controller.ts
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { RecruitersService } from './recruiters.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -7,12 +6,12 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
 @Controller('recruiters')
-@UseGuards(JwtAuthGuard, RolesGuard) 
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class RecruitersController {
   constructor(private readonly recruitersService: RecruitersService) {}
 
   @Get('talents')
-  @Roles(Role.RECRUITER) 
+  @Roles(Role.RECRUITER)
   async listTalents() {
     return this.recruitersService.findAllDevs();
   }

@@ -6,16 +6,14 @@ export class ScheduleService {
   constructor(private prisma: PrismaService) {}
 
   async addBlock(userId: string, data: any) {
-    // 1. Procurar se já existe um bloco para este dia da semana para este usuário específico
     const existingBlock = await this.prisma.studySchedule.findFirst({
       where: {
         userId: userId,
-        dayOfWeek: Number(data.dayOfWeek), // Garante que seja um número
+        dayOfWeek: Number(data.dayOfWeek),
       },
     });
 
     if (existingBlock) {
-      // 2. Se já existir, apenas atualizamos o conteúdo (subject)
       return this.prisma.studySchedule.update({
         where: { id: existingBlock.id },
         data: {
@@ -25,8 +23,6 @@ export class ScheduleService {
         },
       });
     }
-
-    // 3. Se não existir, criamos um novo vinculando ao usuário
     return this.prisma.studySchedule.create({
       data: {
         dayOfWeek: Number(data.dayOfWeek),
@@ -34,7 +30,7 @@ export class ScheduleService {
         startTime: data.startTime || '00:00',
         endTime: data.endTime || '00:00',
         user: {
-          connect: { id: userId } // Conecta o bloco ao ID do usuário do token
+          connect: { id: userId } 
         }
       },
     });
@@ -43,7 +39,7 @@ export class ScheduleService {
   async getMySchedule(userId: string) {
     return this.prisma.studySchedule.findMany({
       where: { userId },
-      orderBy: { dayOfWeek: 'asc' }, // Retorna ordenado (Segunda, Terça...)
+      orderBy: { dayOfWeek: 'asc' }, 
     });
   }
 

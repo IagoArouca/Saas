@@ -39,10 +39,8 @@ export class ProjectsController {
     return this.projectsService.explore(tech);
   }
 
-  // ROTA DE DESTAQUE: Inverte o status de isHighlighted
   @Patch(':id/highlight')
   toggleHighlight(@Param('id') id: string, @Request() req: any) {
-    // Resolve o erro 403 garantindo que o ID do dono do token seja passado
     const userId = req.user.userId || req.user.id || req.user.sub;
     return this.projectsService.toggleHighlight(id, userId);
   }

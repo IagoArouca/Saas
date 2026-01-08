@@ -13,7 +13,6 @@ export class CreatorsController {
   @Post('video')
   @Roles(Role.CONTENT_CREATOR) 
   async upload(@Request() req: any, @Body() body: any) {
-    // Usamos req.user.id que vem do seu JwtStrategy
     return this.creatorsService.addVideo(req.user.id, body);
   }
 

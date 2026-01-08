@@ -6,7 +6,6 @@ import * as streamifier from 'streamifier';
 export class CloudinaryService {
   private readonly logger = new Logger(CloudinaryService.name);
 
-  // Adicionamos o parâmetro opcional 'subfolder' com um valor padrão
   async uploadImage(
     file: Express.Multer.File, 
     subfolder: string = 'geral'
@@ -22,11 +21,7 @@ export class CloudinaryService {
     return new Promise((resolve, reject) => {
       const upload = cloudinary.uploader.upload_stream(
         {
-          // Usamos a pasta base 'mochila_dev' e concatenamos com a subpasta enviada
           folder: `mochila_dev/${subfolder}`,
-          // Removi o upload_preset fixo para que ele use as configurações do folder
-          // Se o seu preset for obrigatório, mantenha a linha abaixo:
-          // upload_preset: 'perfil_usuarios', 
         },
         (error, result) => {
           if (error) {

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { ProjectsController } from './projects.controller';
-import { CloudinaryModule } from '../common/cloudinary/cloudinary.module'; // Importe seu módulo de imagem
+import { CloudinaryModule } from '../common/cloudinary/cloudinary.module'; 
 
 @Module({
-  imports: [CloudinaryModule], // ADICIONE ISSO AQUI
+  imports: [CloudinaryModule], 
   providers: [ProjectsService],
   controllers: [ProjectsController],
 })

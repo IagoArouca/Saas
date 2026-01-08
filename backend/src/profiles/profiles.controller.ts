@@ -26,7 +26,6 @@ export class ProfilesController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMyProfile(@Request() req: any) {
-    // getByUserId agora lida com as duas tabelas automaticamente
     return this.profilesService.getByUserId(req.user.id);
   }
 
@@ -40,11 +39,7 @@ export class ProfilesController {
   @Post('upload-avatar')
   @UseInterceptors(FileInterceptor('file')) 
   async uploadAvatar(@UploadedFile() file: Express.Multer.File, @Request() req: any) {
-    // 1. Faz upload para o Cloudinary
     const result = await this.cloudinaryService.uploadImage(file, 'mochila_dev/avatars');
-    
-    // 2. CORREÇÃO: Usa o método updateAvatar que criamos para decidir a tabela (Profile ou RecruiterProfile)
-    // Usamos result.url ou result.secure_url dependendo do retorno do seu CloudinaryService
     await this.profilesService.updateAvatar(req.user.id, result.secure_url || result.url);
     
     return { url: result.secure_url || result.url };
@@ -54,10 +49,7 @@ export class ProfilesController {
   @Post('upload-banner')
   @UseInterceptors(FileInterceptor('file'))
   async uploadBanner(@UploadedFile() file: Express.Multer.File, @Request() req: any) {
-    // 1. Faz upload para o Cloudinary
     const result = await this.cloudinaryService.uploadImage(file, 'mochila_dev/banners');
-    
-    // 2. CORREÇÃO: Usa o método updateBanner específico
     await this.profilesService.updateBanner(req.user.id, result.secure_url || result.url);
     
     return { url: result.secure_url || result.url };

@@ -9,7 +9,6 @@ export class AnalyticsController {
 
   @Get('profile-views')
   async getProfileViews(@Request() req: any) {
-    // Usamos o ID injetado pelo Passport JWT
     const userId = req.user.id;
 
     if (!userId) {

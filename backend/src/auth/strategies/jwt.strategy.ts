@@ -13,7 +13,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(payload: any) {
-        // Retornamos 'id' para que req.user.id funcione no Controller
         return { 
             id: payload.sub, 
             email: payload.email, 

@@ -88,15 +88,12 @@ export class StudyTrackService {
     });
   }
 
-  // MÉTODO QUE ESTAVA FALTANDO
   async updateModule(moduleId: string, title: string) {
     return this.prisma.studyModule.update({
       where: { id: moduleId },
       data: { title }
     });
   }
-
-  // MÉTODO QUE ESTAVA FALTANDO
   async deleteModule(moduleId: string) {
     return this.prisma.studyModule.delete({
       where: { id: moduleId }

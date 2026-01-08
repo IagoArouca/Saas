@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config'; // 1. Importe o ConfigModule
+import { ConfigModule } from '@nestjs/config'; 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
@@ -18,9 +18,8 @@ import { StudyModule } from './study/study.module';
 
 @Module({
   imports: [
-    // 2. Adicione o ConfigModule como o PRIMEIRO item do array de imports
     ConfigModule.forRoot({
-      isGlobal: true, // Torna as variáveis de ambiente disponíveis em todos os módulos
+      isGlobal: true, 
     }),
     PrismaModule, 
     UsersModule, 

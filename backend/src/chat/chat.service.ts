@@ -13,14 +13,10 @@ export class ChatService {
     receiverId?: string,
   ) {
     let finalConversationId = conversationId;
-
-    // Se não houver conversa, tenta criar (apenas Recrutador)
     if (!finalConversationId && receiverId) {
       if (userRole !== 'RECRUITER') {
         throw new ForbiddenException('Apenas recrutadores iniciam conversas.');
       }
-
-      // Evitar conversa consigo mesmo
       if (userId === receiverId) {
         throw new BadRequestException('Não é possível iniciar chat consigo mesmo.');
       }
@@ -65,8 +61,8 @@ export class ChatService {
         sender: { 
           select: { 
             id: true,
-            email: true, // Usamos email pois username não existe no Model User
-            profile: { select: { avatar: true, username: true } } // Pegamos o username daqui!
+            email: true, 
+            profile: { select: { avatar: true, username: true } } 
           } 
         }
       }
@@ -89,7 +85,7 @@ export class ChatService {
           take: 50 
         }
       },
-      orderBy: { createdAt: 'desc' } // Usando createdAt pois seu model não tem updatedAt
+      orderBy: { createdAt: 'desc' } 
     });
   }
 

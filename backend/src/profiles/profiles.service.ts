@@ -9,28 +9,20 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ProfilesService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Atualiza ou Cria o perfil dependendo do Role do usuário
-   */
   async update(userId: string, data: any) {
     if (!userId) throw new BadRequestException('ID do usuário é obrigatório');
-
-    // 1. Busca o usuário para verificar o Role
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { role: true }
     });
 
     if (!user) throw new NotFoundException('Usuário não encontrado');
-
-    // Helper para formatar campos que vêm como string ou array do front
     const formatArray = (val: any) => {
       if (Array.isArray(val)) return val;
       if (typeof val === 'string') return val.split(',').map(i => i.trim()).filter(i => i !== "");
       return [];
     };
 
-    // 2. Validação de Username Único (Check em ambas as tabelas)
     if (data.username) {
       const usernameLower = data.username.toLowerCase().trim();
       
@@ -46,11 +38,9 @@ export class ProfilesService {
       }
       data.username = usernameLower;
     }
-
-    // 3. Lógica específica para RECRUITER
     if (user.role === 'RECRUITER') {
       const recruiterData = {
-        username: data.username, // CRUCIAL: Agora incluído no objeto de dados
+        username: data.username, 
         fullName: data.fullName,
         bio: data.bio,
         companyName: data.companyName,
@@ -74,7 +64,7 @@ export class ProfilesService {
 
       return this.prisma.recruiterProfile.upsert({
         where: { userId },
-        update: recruiterData, // Atualiza se existir
+        update: recruiterData, 
         create: { 
           ...recruiterData, 
           userId,
@@ -82,21 +72,16 @@ export class ProfilesService {
         },
       });
     }
-
-    // 4. Lógica para DEV (Profile padrão)
     return this.prisma.profile.update({
       where: { userId },
       data: {
         ...data,
-        username: data.username, // Garante que o username atualize aqui também
+        username: data.username, 
         technologies: formatArray(data.technologies)
       },
     });
   }
 
-  /**
-   * Busca o perfil completo (Me) com base no Role
-   */
   async getByUserId(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -104,17 +89,11 @@ export class ProfilesService {
     });
 
     if (!user) throw new NotFoundException('Usuário não encontrado');
-    
-    // Retorna o perfil correto dependendo do tipo de conta
     const profile = user.role === 'RECRUITER' ? user.recruiterProfile : user.profile;
     
     if (!profile) return { role: user.role, userId: user.id };
     return { ...profile, role: user.role };
   }
-
-  /**
-   * Atualiza apenas o Avatar
-   */
   async updateAvatar(userId: string, avatarUrl: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
@@ -136,10 +115,6 @@ export class ProfilesService {
       data: { avatar: avatarUrl }
     });
   }
-
-  /**
-   * Atualiza apenas o Banner
-   */
   async updateBanner(userId: string, bannerUrl: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuário não encontrado');
@@ -161,12 +136,7 @@ export class ProfilesService {
       data: { bannerUrl: bannerUrl }
     });
   }
-
-  /**
-   * Busca Perfil Público por Username (Slug)
-   */
   async findPublicProfile(username: string, ip: string) {
-    // Tenta encontrar como Recrutador primeiro
     const recruiter = await this.prisma.recruiterProfile.findUnique({
       where: { username },
       include: { user: true }
@@ -175,16 +145,12 @@ export class ProfilesService {
     if (recruiter) {
       return { ...recruiter, type: 'RECRUITER' };
     }
-
-    // Se não for recrutador, busca como Dev
     const dev = await this.prisma.profile.findUnique({
       where: { username },
       include: { user: { include: { projects: true } } }
     });
 
     if (!dev) throw new NotFoundException('Perfil não encontrado');
-
-    // Registra a visita (opcional)
     this.prisma.profileVisit.create({
       data: { profileId: dev.id, ip: ip || 'unknown' }
     }).catch(() => null);

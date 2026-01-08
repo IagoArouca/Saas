@@ -20,8 +20,6 @@ export class ProjectsService {
       orderBy: { createdAt: 'desc' },
     });
   }
-
-  // MÉTODO ATUALIZADO: Toggle Highlight
   async toggleHighlight(projectId: string, userId: string) {
     const project = await this.prisma.project.findUnique({ 
       where: { id: projectId } 
@@ -33,7 +31,7 @@ export class ProjectsService {
     return this.prisma.project.update({
       where: { id: projectId },
       data: {
-        isHighlighted: !project.isHighlighted, // Inverte o valor (true -> false / false -> true)
+        isHighlighted: !project.isHighlighted,
       },
     });
   }
