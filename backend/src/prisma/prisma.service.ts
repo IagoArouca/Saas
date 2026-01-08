@@ -5,11 +5,16 @@ import { PrismaClient } from '@prisma/client';
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
     super({
-      log: ['error', 'warn'], 
+      log: ['error', 'warn'],
     });
   }
 
   async onModuleInit() {
-    await this.$connect();
+    try {
+      await this.$connect();
+      console.log('✅ Conectado ao Supabase com sucesso!');
+    } catch (error) {
+      console.error('⚠️ Erro ao conectar no boot (o app continuará subindo):', error.message);
+    }
   }
 }
