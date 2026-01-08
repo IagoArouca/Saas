@@ -27,11 +27,7 @@ export const FocusProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }, 1000);
     } else if (timeLeft === 0) {
       setIsActive(false);
-      
-      // DISPARO DUPLO: Toca a primeira vez imediatamente
       playNotification();
-      
-      // Toca a segunda vez após 1.5 segundos (tempo ideal para a maioria dos pings)
       setTimeout(() => {
         playNotification();
       }, 1500);

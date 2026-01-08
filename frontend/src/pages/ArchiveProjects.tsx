@@ -33,28 +33,18 @@ export const ArchiveProjects = () => {
       <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </div>
   );
-
-  // --- LÓGICA DE FILTRAGEM: APENAS NÃO DESTACADOS + FILTROS DE BUSCA ---
   const archiveProjects = profile.projects.filter((p: any) => {
-    // 1. Regra base: Só entra no arquivo se NÃO estiver destacado
     const isNotFeatured = !p.isHighlighted;
-
-    // 2. Regra de busca por texto (Título ou Descrição)
     const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           p.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    // 3. Regra de tecnologia
     const matchesTech = selectedTech === 'All' || p.technologies?.includes(selectedTech);
 
     return isNotFeatured && matchesSearch && matchesTech;
   });
-
-  // Lista de tecnologias baseada em todos os projetos (para o filtro ser completo)
   const allTechs = ['All', ...new Set(profile.projects.flatMap((p: any) => p.technologies || []))];
 
   return (
     <div className="min-h-screen bg-[#020203] text-white font-sans selection:bg-blue-500/30">
-      {/* Background Decor */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-20">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/20 blur-[120px] rounded-full" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-900/20 blur-[120px] rounded-full" />
@@ -68,7 +58,7 @@ export const ArchiveProjects = () => {
             className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors"
           >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-            <span className="text-xs font-black uppercase tracking-widest ">Retornar</span>
+            <span className="text-xs font-black uppercase tracking-widest cursor-pointer ">Retornar</span>
           </button>
           
           <div className="flex items-center gap-4">
@@ -82,7 +72,6 @@ export const ArchiveProjects = () => {
       </header>
 
       <main className="relative z-10 max-w-7xl mx-auto px-6 py-16">
-        {/* Intro */}
         <div className="mb-20">
           <div className="flex items-center gap-4 mb-4">
              <Layers className="text-blue-500" size={24} />
@@ -95,8 +84,6 @@ export const ArchiveProjects = () => {
             Exploração completa de módulos desenvolvidos, arquiteturas de sistema e protótipos experimentais que compõem o ecossistema técnico.
           </p>
         </div>
-
-        {/* Filters Bar */}
         <div className="flex flex-col lg:flex-row gap-8 mb-12 items-end justify-between">
           <div className="w-full lg:max-w-md">
             <div className="relative group">
@@ -128,14 +115,11 @@ export const ArchiveProjects = () => {
           </div>
         </div>
 
-        {/* Results Info */}
         <div className="flex items-center gap-4 mb-8 text-zinc-500 font-mono text-[10px] uppercase tracking-widest">
            <LayoutGrid size={14} />
            <span>Exibindo {archiveProjects.length} projetos</span>
            <div className="h-px flex-1 bg-white/5" />
         </div>
-
-        {/* Grid de Projetos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {archiveProjects.map((project: any) => (
             <div 
@@ -195,13 +179,13 @@ export const ArchiveProjects = () => {
 
         {archiveProjects.length === 0 && (
           <div className="py-40 text-center border border-dashed border-white/10 rounded-[3rem]">
-            <p className="text-zinc-600 font-mono text-sm uppercase tracking-[0.4em]">No_Data_Found_In_This_Sector</p>
+            <p className="text-zinc-600 font-mono text-sm uppercase tracking-[0.4em]">Nenhum dado encontrado neste setor</p>
           </div>
         )}
       </main>
 
       <footer className="py-20 border-t border-white/5 text-center">
-         <p className="text-zinc-600 font-mono text-[10px] uppercase tracking-[0.5em]">System_Archive_v1.0 // {profile.username}</p>
+         <p className="text-zinc-600 font-mono text-[10px] uppercase tracking-[0.5em]">Sistema de arquivos_v1.0 // {profile.username}</p>
       </footer>
     </div>
   );

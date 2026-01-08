@@ -1,9 +1,9 @@
-import { LayoutDashboard, MessageSquare, Search, Settings, LogOut, Folder, UserCircle, Globe, Video, BookOpen } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Search, Settings, LogOut, Folder, UserCircle, Globe, BookOpen, Users } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 
 export const Sidebar = () => {
-  const { user, logout, hasUnreadMessages, setHasUnreadMessages } = useAuthStore();
+  const { user, logout, hasUnreadMessages } = useAuthStore();
 
   const isDev = user?.role === 'DEV';
   const isRecruiter = user?.role === 'RECRUITER';
@@ -13,8 +13,14 @@ export const Sidebar = () => {
     { 
       name: 'Dashboard', 
       icon: LayoutDashboard, 
-      path: isCreator ? '/dashboard/creator' : isRecruiter ? '/dashboard/recruiter' : '/dashboard/dev',
-      show: true 
+      path: isCreator ? '/dashboard/creator' : '/dashboard/dev',
+      show: isDev || isCreator 
+    },
+    { 
+      name: 'Buscar Talentos', 
+      icon: Users, 
+      path: '/dashboard/talentos', 
+      show: isRecruiter 
     },
     { name: 'Meus Projetos', icon: Folder, path: '/dashboard/projects', show: isDev },
     { name: 'Trilha de Estudo', icon: BookOpen, path: '/dashboard/tracks', show: isDev },
@@ -25,7 +31,7 @@ export const Sidebar = () => {
       show: isDev || isRecruiter 
     },
     { 
-      name: isRecruiter ? 'Explorar' : 'Explorar projetos', 
+      name: isRecruiter ? 'Explorar Projetos' : 'Explorar projetos', 
       icon: Search, 
       path: '/dashboard/explore', 
       show: isDev || isRecruiter 
@@ -37,7 +43,7 @@ export const Sidebar = () => {
       show: !!user?.username
     },
     { 
-      name: isRecruiter ? 'Meu Perfil' : 'Meu Perfil', 
+      name: 'Meu Perfil', 
       icon: UserCircle, 
       path: '/dashboard/profile',
       show: true 
@@ -48,7 +54,7 @@ export const Sidebar = () => {
   return (
     <aside className="w-64 bg-slate-950 border-r border-slate-800 flex flex-col h-screen sticky top-0">
       <div className="p-8 text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent italic tracking-tighter">
-        Mochila.dev
+        LuzNo Codigo
       </div>
 
       <nav className="flex-1 px-4 space-y-2">
@@ -59,7 +65,7 @@ export const Sidebar = () => {
             className={({ isActive }) => `
               flex items-center gap-3 px-4 py-3 rounded-xl transition-all group relative
               ${isActive 
-                ? isRecruiter ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white'
+                ? isRecruiter ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/20' : 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
                 : 'text-slate-400 hover:bg-slate-900 hover:text-white'
               }
             `}
@@ -67,7 +73,6 @@ export const Sidebar = () => {
             <item.icon size={20} />
             <span className="font-medium text-sm">{item.name}</span>
             
-            {/* Indicador visual de mensagens não lidas se necessário futuramente */}
             {item.name === 'Mensagens' && hasUnreadMessages && (
               <span className="absolute right-4 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
             )}

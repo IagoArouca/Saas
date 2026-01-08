@@ -32,7 +32,7 @@ export const SocketNotification = () => {
     if (action === 'now') {
       navigate('/dashboard/chat');
     } else {
-      setHasUnreadMessages(true); // Ativa o ponto vermelho na sidebar
+      setHasUnreadMessages(true); 
     }
     setNotification(null);
   };

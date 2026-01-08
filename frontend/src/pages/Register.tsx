@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { Code2, Briefcase, MonitorPlay, ChevronRight, Loader2 } from 'lucide-react';
-import { useAuthStore } from '../store/useAuthStore'; // Importe a Store
+import { useAuthStore } from '../store/useAuthStore'; 
 import api from '../services/api';
 
 const roles = [
@@ -37,7 +37,7 @@ export const Register = () => {
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
   
-  const setAuth = useAuthStore((state: any) => state.setAuth); // Hook para salvar sessão
+  const setAuth = useAuthStore((state: any) => state.setAuth); 
   const navigate = useNavigate();
 
   const onSubmit = async (data: any) => {
@@ -47,19 +47,11 @@ export const Register = () => {
         ...data, 
         role: selectedRole 
       };
-      
-      // Chama o registro
       const res = await api.post('/auth/register', payload);
-      
-      // Como o backend retorna o login automático, pegamos o access_token
       const { user, access_token } = res.data;
-
-      // Salva na Store para o usuário já ficar logado
       setAuth(user, access_token);
       
       alert('Conta criada com sucesso! Bem-vindo(a).');
-
-      // Redireciona conforme o cargo
       if (user.role === 'RECRUITER') {
         navigate('/dashboard/recruiter');
       } else {
@@ -79,10 +71,8 @@ export const Register = () => {
       <div className="max-w-4xl w-full space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight">Crie sua conta</h1>
-          <p className="text-slate-400 mt-2">Como você pretende usar a Mochila do Dev?</p>
+          <p className="text-slate-400 mt-2">Como você pretende usar a luz do Dev?</p>
         </div>
-
-        {/* Seleção de Cargo */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {roles.map((role) => (
             <div
@@ -104,8 +94,6 @@ export const Register = () => {
             </div>
           ))}
         </div>
-
-        {/* Formulário */}
         <div className="max-w-md mx-auto w-full pt-4">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
@@ -143,7 +131,7 @@ export const Register = () => {
           </form>
           
           <p className="mt-6 text-center text-sm text-slate-500">
-            Já tem uma mochila? <span onClick={() => navigate('/login')} className="text-blue-400 cursor-pointer hover:underline">Entre aqui</span>
+            Já tem uma conta? <span onClick={() => navigate('/login')} className="text-blue-400 cursor-pointer hover:underline">Entre aqui</span>
           </p>
         </div>
       </div>

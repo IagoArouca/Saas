@@ -37,8 +37,6 @@ export const Analytics = () => {
           <TrendingUp size={16} /> +{data?.total > 0 ? '100' : '0'}% este mês
         </div>
       </header>
-
-      {/* Cards de Métricas Reais */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-3xl backdrop-blur-md">
           <div className="bg-blue-500/10 w-10 h-10 rounded-lg flex items-center justify-center mb-4">

@@ -131,8 +131,6 @@ export const PublicProfile = () => {
       <Helmet>
         <title>{`${profile.fullName || profile.username} | Dev_Dossier`}</title>
       </Helmet>
-
-      {/* Navegação Lateral */}
       <nav className="fixed right-6 md:right-10 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-8">
         {sections.map((sec, i) => (
           <button
@@ -153,8 +151,6 @@ export const PublicProfile = () => {
       </nav>
 
       <div className="min-h-screen bg-[#020203] text-white selection:bg-blue-500/30 font-sans">
-        
-        {/* Hero Header */}
         <header className="relative h-[35rem] w-full overflow-hidden border-b border-white/5">
           {profile.bannerUrl ? (
             <img src={profile.bannerUrl} className="w-full h-full object-cover opacity-40" alt="" />
@@ -192,7 +188,6 @@ export const PublicProfile = () => {
         </header>
 
         <main>
-          {/* Bio Section */}
           <SectionWrapper id="briefing" index={0} setActiveSection={setActiveSection}>
             <div className="max-w-4xl">
               <h2 className="text-blue-500 font-mono tracking-[0.5em] uppercase text-xs mb-8 flex items-center gap-2">
@@ -206,8 +201,6 @@ export const PublicProfile = () => {
               </p>
             </div>
           </SectionWrapper>
-
-          {/* Tech Stack Section */}
           <SectionWrapper id="stack" index={1} setActiveSection={setActiveSection}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               <div>
@@ -224,8 +217,6 @@ export const PublicProfile = () => {
               </div>
             </div>
           </SectionWrapper>
-
-          {/* Featured Projects */}
           {featuredProjects.map((project: any, i: number) => (
             <SectionWrapper key={project.id} id={`project-${i}`} index={i + 2} setActiveSection={setActiveSection}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
@@ -261,8 +252,6 @@ export const PublicProfile = () => {
               </div>
             </SectionWrapper>
           ))}
-
-          {/* Archive Link - BOTÃO CORRIGIDO AQUI */}
           <div className="py-32 flex flex-col items-center justify-center border-t border-white/5 bg-[#020203]">
               <button 
                 onClick={() => { if (profile?.username) navigate(`/p/${profile.username}/archive`); }} 
@@ -287,7 +276,6 @@ export const PublicProfile = () => {
               </button>
           </div>
 
-          {/* Contact Section */}
           <SectionWrapper id="contact" index={sections.length - 1} setActiveSection={setActiveSection}>
             <div className="w-full max-w-5xl mx-auto">
               <h2 className="text-emerald-500 font-mono tracking-[0.5em] uppercase text-[10px] mb-12 flex items-center gap-4">

@@ -25,7 +25,6 @@ export const MyVideos = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Estados do formulário
   const [newVideo, setNewVideo] = useState({
     title: '',
     videoUrl: '',
@@ -73,7 +72,6 @@ export const MyVideos = () => {
     }
   };
 
-  // Função simples para extrair ID do YouTube e gerar thumbnail
   const getYouTubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
@@ -101,8 +99,6 @@ export const MyVideos = () => {
           <Plus size={20} /> Adicionar Novo
         </button>
       </div>
-
-      {/* GRID DE VÍDEOS */}
       {loading ? (
         <div className="flex justify-center py-20">
           <Loader2 className="animate-spin text-blue-500" size={40} />
@@ -151,7 +147,6 @@ export const MyVideos = () => {
         </div>
       )}
 
-      {/* MODAL ADICIONAR (SIMPLIFICADO) */}
       {showAddModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md bg-black/60">
           <div className="bg-[#0f0f12] border border-white/10 w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl">

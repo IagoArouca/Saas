@@ -31,22 +31,15 @@ export const ProjectsSection = () => {
   };
 
   useEffect(() => { loadProjects(); }, []);
-
-  // --- LÓGICA DE DESTAQUE CORRIGIDA ---
   const handleToggleHighlight = async (proj: any) => {
     const highlightedCount = projects.filter((p: any) => p.isHighlighted).length;
-
-    // Se o projeto NÃO está destacado e já temos 3, bloqueia para manter o design do perfil
     if (!proj.isHighlighted && highlightedCount >= 3) {
       alert("⚠️ Limite atingido! Você só pode destacar 3 projetos para exibição principal no dossiê.");
       return;
     }
 
     try {
-      // Chama a rota específica PATCH /projects/:id/highlight
       await api.patch(`/projects/${proj.id}/highlight`);
-      
-      // Recarrega a lista para atualizar as estrelas na tela
       loadProjects();
     } catch (error: any) {
       console.error("Erro ao processar destaque:", error.response?.data);
@@ -95,7 +88,6 @@ export const ProjectsSection = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-4 pb-20">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-12">
         <div>
           <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Módulos_Instalados</h2>
@@ -109,8 +101,6 @@ export const ProjectsSection = () => {
           <span className="cursor-pointer tracking-widest text-sm">Criar</span>
         </button>
       </div>
-
-      {/* Grid de Projetos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {projects.map((proj: any) => (
           <div 
@@ -124,16 +114,12 @@ export const ProjectsSection = () => {
                 alt={proj.title}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-90" />
-              
-              {/* Status Badge */}
               <div className="absolute top-3 left-3 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/5">
                 <div className={`w-1.5 h-1.5 rounded-full ${proj.isHighlighted ? 'bg-yellow-500 shadow-[0_0_8px_#eab308]' : 'bg-emerald-500'} animate-pulse`} />
                 <span className="text-[10px] font-mono text-white tracking-[0.2em] font-bold uppercase">
                   {proj.isHighlighted ? 'Destaque' : 'Online'}
                 </span>
               </div>
-
-              {/* Botão de Estrela (Destaque) */}
               <button 
                 onClick={() => handleToggleHighlight(proj)}
                 className={`cursor-pointer absolute top-3 right-3 z-30 p-2.5 rounded-xl backdrop-blur-md border transition-all ${
@@ -191,8 +177,6 @@ export const ProjectsSection = () => {
           </div>
         ))}
       </div>
-
-      {/* --- MODAL DE CRIAÇÃO --- */}
       {showModal && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
           <div className="bg-[#0f172a] border border-slate-800 w-full max-w-2xl rounded-2xl shadow-3xl flex flex-col max-h-[95vh] overflow-hidden">

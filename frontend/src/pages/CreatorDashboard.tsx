@@ -14,7 +14,7 @@ import api from '../services/api';
 export const CreatorDashboard = () => {
   const [stats, setStats] = useState({
     totalVideos: 0,
-    totalViews: 0, // Se você tiver essa integração no futuro
+    totalViews: 0, 
     recentVideos: []
   });
   const [loading, setLoading] = useState(true);
@@ -39,7 +39,6 @@ export const CreatorDashboard = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-10">
-      {/* HEADER DE BOAS-VINDAS */}
       <header>
         <h1 className="text-5xl font-black italic uppercase tracking-tighter text-white">
           Content_Control <span className="text-blue-500">.</span>
@@ -48,8 +47,6 @@ export const CreatorDashboard = () => {
           Central de Comando do Criador
         </p>
       </header>
-
-      {/* CARDS DE ESTATÍSTICAS ROBUSTOS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden group">
           <Video className="absolute -right-4 -bottom-4 text-white/10 group-hover:scale-110 transition-transform" size={120} />
@@ -76,8 +73,6 @@ export const CreatorDashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* CONTEÚDO RECENTE E QUICK ACTIONS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <h3 className="text-xl font-bold text-white flex items-center gap-3">

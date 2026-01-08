@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api'; 
-import { useFocus } from '../contexts/FocusContext'; // Importando o contexto global
+import { useFocus } from '../contexts/FocusContext'; 
 import { 
   Calendar, Clock, Zap, Play, Square, 
   RefreshCcw, Edit3, Save, Terminal, Trash2, Loader2
@@ -15,15 +15,11 @@ const initialSchedule = [
 ];
 
 export const WeeklyOrchestrator = () => {
-  // --- ESTADOS DO CRONOGRAMA ---
   const [schedule, setSchedule] = useState(initialSchedule);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // --- CONSUMINDO O TIMER GLOBAL ---
   const { timeLeft, isActive, setIsActive, resetTimer, formatTime } = useFocus();
 
-  // --- 1. CARREGAR DO BANCO DE DADOS ---
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
@@ -46,7 +42,6 @@ export const WeeklyOrchestrator = () => {
     fetchSchedule();
   }, []);
 
-  // --- 2. SALVAR NO BANCO DE DADOS ---
   const handleSave = async () => {
     setLoading(true);
     try {
@@ -89,15 +84,13 @@ export const WeeklyOrchestrator = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-6 pb-20 animate-in fade-in duration-1000">
-      
-      {/* 1. SEÇÃO POMODORO (CONECTADA AO CONTEXTO) */}
       <div className="mb-16 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center bg-slate-900/40 border border-slate-800 p-8 rounded-2xl backdrop-blur-md">
         <div className="flex items-center gap-4">
           <div className="p-4 bg-blue-600 rounded-xl shadow-lg shadow-blue-600/30">
             <Terminal className="text-white" size={28} />
           </div>
           <div>
-            <h2 className="text-xl font-black text-white tracking-tight italic">MODO_FOCO</h2>
+            <h2 className="text-xl font-black text-white tracking-tight italic">MODO FOCO</h2>
             <p className="text-xs font-mono text-slate-500 uppercase tracking-widest text-blue-400">Trabalho Profundo</p>
           </div>
         </div>
@@ -130,11 +123,9 @@ export const WeeklyOrchestrator = () => {
           </button>
         </div>
       </div>
-
-      {/* 2. CABEÇALHO */}
       <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
         <div>
-          <h2 className="text-3xl font-black text-white tracking-tighter">CRONOGRAMA_SEMANAL</h2>
+          <h2 className="text-3xl font-black text-white tracking-tighter">CRONOGRAMA SEMANAL</h2>
           <p className="text-slate-500 text-xs font-mono uppercase mt-1 tracking-[0.4em]">Orquestração de Sprints Diários</p>
         </div>
         
@@ -157,8 +148,6 @@ export const WeeklyOrchestrator = () => {
           </button>
         </div>
       </div>
-
-      {/* 3. COLUNAS DO CRONOGRAMA */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
         {schedule.map((day) => (
           <div 

@@ -36,8 +36,6 @@ export const ExploreProjects = () => {
         <h1 className="text-4xl font-black tracking-tighter text-white italic uppercase">Explorar_Sistemas</h1>
         <p className="text-slate-500 font-mono text-xs uppercase tracking-[0.3em] mt-2">Protocolos de rede descobertos na infraestrutura</p>
       </header>
-
-      {/* Barra de Busca Estilizada */}
       <div className="bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex gap-4 items-center backdrop-blur-md">
         <div className="flex-1 relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-emerald-500 transition-colors" size={18} />
@@ -62,10 +60,7 @@ export const ExploreProjects = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.length > 0 ? projects.map((proj: any) => (
-            /* CARD DE EXPLORAÇÃO: ESTILO DOSSIÊ */
             <div key={proj.id} className="group relative bg-[#0a0f1a] border border-slate-800 rounded-xl p-1 transition-all duration-300 hover:border-emerald-500/40 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] flex flex-col">
-              
-              {/* Header do Card (Identificador) */}
               <div className="flex items-center justify-between bg-slate-900/50 p-3 rounded-t-lg border-b border-slate-800">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
@@ -76,8 +71,6 @@ export const ExploreProjects = () => {
                   <span className="text-[9px] font-mono text-emerald-500 font-black">@{proj.user?.profile?.username}</span>
                 </div>
               </div>
-
-              {/* Body do Card */}
               <div className="p-5 flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-3">
                   <Cpu size={14} className="text-slate-600" />
@@ -92,8 +85,6 @@ export const ExploreProjects = () => {
                     {proj.description || "Sem metadados descritivos no sistema."}
                   </p>
                 </div>
-
-                {/* Tags de Tecnologia (Estilo Console) */}
                 <div className="flex flex-wrap gap-1.5 mt-auto">
                   {proj.technologies.slice(0, 4).map((t: string) => (
                     <span key={t} className="text-[9px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded border border-slate-800 font-mono uppercase">
@@ -105,8 +96,6 @@ export const ExploreProjects = () => {
                   )}
                 </div>
               </div>
-
-              {/* Botão de Ação Estilo Scan */}
               <div className="p-3 pt-0">
                 <button 
                   onClick={() => navigate(`/p/${proj.user?.profile?.username}`)}

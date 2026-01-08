@@ -91,8 +91,6 @@ export const StudyTracks = () => {
 
   return (
     <div className="min-h-screen p-8 max-w-7xl mx-auto space-y-12 pb-32">
-      
-      {/* HEADER */}
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 border-b border-white/5 pb-10">
         <div className="space-y-2">
           <div className="flex items-center gap-3 text-emerald-500 font-mono text-[10px] tracking-[0.5em] uppercase">
@@ -116,18 +114,13 @@ export const StudyTracks = () => {
               <p className="text-white font-black">{isActive ? `EM FOCO: ${formatTime(timeLeft)}` : 'SESSÃO PRONTA'}</p>
             </div>
           </div>
-          
-          {/* BOTÃO DE NOVA TRILHA - REFINADO E REFLEXIVO */}
           <button 
             onClick={() => setIsModalOpen(true)}
             className="cursor-pointer group relative px-8 py-3.5 bg-emerald-500 rounded-xl font-black uppercase text-[11px] tracking-[0.15em] text-black transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] active:scale-95 overflow-hidden border border-emerald-400/50"
           >
-            {/* Efeito Reflexivo (Glint) */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
             </div>
-            
-            {/* Borda de luz superior */}
             <div className="absolute inset-x-0 top-0 h-[1px] bg-white/40" />
             
             <span className="relative flex items-center gap-2.5">
@@ -137,8 +130,6 @@ export const StudyTracks = () => {
           </button>
         </div>
       </header>
-
-      {/* GRID DE TRILHAS */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {tracks.map(track => {
           const progress = calculateProgress(track.modules);
@@ -165,8 +156,6 @@ export const StudyTracks = () => {
                     <Trash2 size={20} />
                   </button>
                 </div>
-
-                {/* PROGRESS BAR */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-end">
                     <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">System_Progress</span>
@@ -179,8 +168,6 @@ export const StudyTracks = () => {
                     />
                   </div>
                 </div>
-
-                {/* MODULES */}
                 <div className="space-y-3 pt-4">
                   {track.modules.map((module) => (
                     <div key={module.id} className="group/item flex items-center justify-between p-5 rounded-3xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all hover:translate-x-1">
@@ -234,8 +221,6 @@ export const StudyTracks = () => {
           );
         })}
       </div>
-
-      {/* MODAL CRIAR TRILHA */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/95 backdrop-blur-md">
           <div className="relative bg-[#0d0d0d] border border-white/10 w-full max-w-xl rounded-[2.5rem] p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">

@@ -5,7 +5,7 @@ interface User {
   id: string;
   email: string;
   role: 'DEV' | 'RECRUITER' | 'CONTENT_CREATOR';
-  username?: string; // Campo vital para as rotas
+  username?: string; 
   avatar?: string;
   fullName?: string;
 }

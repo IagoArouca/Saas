@@ -7,7 +7,6 @@ const api: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-// 🔐 Interceptor de request → injeta o JWT
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = useAuthStore.getState().token;
@@ -22,7 +21,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 🚪 Interceptor de response → logout automático se token expirar
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {

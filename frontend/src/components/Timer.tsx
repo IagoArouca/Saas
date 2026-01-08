@@ -19,8 +19,6 @@ export const Timer = () => {
       }, 1000);
     } else if (minutes === 0 && seconds === 0 && isActive) {
       setIsActive(false);
-      
-      // SALVAR SESSÃO DE FOCO NO BANCO
       api.post('/productivity/log-session', {
         duration: 25,
         subject: "Foco Mochila_Dev"

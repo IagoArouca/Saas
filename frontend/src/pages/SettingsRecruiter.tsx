@@ -8,12 +8,11 @@ import {
 } from 'lucide-react';
 import { AvatarUpload } from '../components/AvatarUpload';
 
-// --- INTERFACES ---
 interface OpenPosition {
   title: string;
   role: string;
   seniority: string;
-  workMode: string; // Adicionado: Remoto, Presencial, Híbrido
+  workMode: string; 
   requirements: string;
   plus: string;
 }
@@ -54,7 +53,7 @@ const RECRUITER_ROLES = [
 const COMPANY_SIZES = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"];
 const JOB_ROLES = ["Frontend", "Backend", "Fullstack", "Mobile", "DevOps", "QA", "Data", "UX/UI"];
 const SENIORITIES = ["Estágio", "Júnior", "Pleno", "Sênior", "Staff", "Lead"];
-const WORK_MODES = ["Remoto", "Híbrido", "Presencial"]; // Opções de modalidade
+const WORK_MODES = ["Remoto", "Híbrido", "Presencial"]; 
 
 export const SettingsRecruiter = () => {
   const [loading, setLoading] = useState(false);
@@ -112,8 +111,6 @@ export const SettingsRecruiter = () => {
 
   return (
     <div className="max-w-5xl mx-auto py-12 px-8 font-sans antialiased text-slate-200">
-      
-      {/* 00. BANNER E AVATAR */}
       <div className="relative mb-28">
         <div className="relative h-64 w-full bg-slate-900 border border-slate-800 rounded-sm group overflow-hidden">
           {bannerUrl ? (
@@ -154,8 +151,7 @@ export const SettingsRecruiter = () => {
       </header>
 
       <form onSubmit={handleSubmit(onUpdateProfile)} className="space-y-12">
-        
-        {/* 01. USERNAME */}
+
         <section className="space-y-6">
           <div className="flex items-center gap-4 text-slate-400">
             <Search size={18} />
@@ -173,8 +169,6 @@ export const SettingsRecruiter = () => {
             </div>
           </div>
         </section>
-
-        {/* 02. DADOS PESSOAIS */}
         <section className="space-y-6">
           <div className="flex items-center gap-4 text-slate-400">
             <Info size={18} />
@@ -198,8 +192,6 @@ export const SettingsRecruiter = () => {
             </div>
           </div>
         </section>
-
-        {/* 03. EMPRESA */}
         <section className="space-y-6">
           <div className="flex items-center gap-4 text-slate-400">
             <Building2 size={18} />
@@ -223,8 +215,6 @@ export const SettingsRecruiter = () => {
             </div>
           </div>
         </section>
-
-        {/* 04. MÉTRICAS */}
         <section className="space-y-6">
           <div className="flex items-center gap-4 text-slate-400">
             <Zap size={18} />
@@ -250,8 +240,6 @@ export const SettingsRecruiter = () => {
             </div>
           </div>
         </section>
-
-        {/* 05. VAGAS ABERTAS */}
         <section className="space-y-6">
           <div className="flex items-center gap-4 text-slate-400">
             <Briefcase size={18} />
@@ -277,7 +265,6 @@ export const SettingsRecruiter = () => {
                   <select {...register(`openPositions.${index}.seniority`)} className="bg-slate-950 border border-slate-800 p-3 text-xs text-white uppercase font-bold">
                     {SENIORITIES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
-                  {/* NOVO CAMPO: Modalidade */}
                   <select {...register(`openPositions.${index}.workMode`)} className="bg-slate-950 border border-slate-800 p-3 text-xs text-emerald-500 uppercase font-bold outline-none">
                     {WORK_MODES.map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
@@ -297,8 +284,6 @@ export const SettingsRecruiter = () => {
             </button>
           </div>
         </section>
-
-        {/* 06. LINKS SOCIAIS */}
         <section className="space-y-6">
           <div className="flex items-center gap-4 text-slate-400">
             <Globe size={18} />

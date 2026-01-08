@@ -15,14 +15,8 @@ export const Login = () => {
     setLoading(true);
     try {
       const res = await api.post('/auth/login', data);
-      
-      // IMPORTANTE: O backend envia 'access_token' (com underline)
       const { user, access_token } = res.data;
-
-      // Salva no Zustand/LocalStorage
       setAuth(user, access_token);
-
-      // Redirecionamento baseado no cargo
       if (user.role === 'RECRUITER') {
         navigate('/dashboard/recruiter');
       } else {
@@ -44,8 +38,8 @@ export const Login = () => {
           <div className="bg-blue-600 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <LogIn size={24} />
           </div>
-          <h1 className="text-2xl font-bold">Bem-vindo de volta</h1>
-          <p className="text-slate-400 text-sm mt-1">Acesse sua mochila para continuar.</p>
+          <h1 className="text-2xl font-bold">Bem-vindo</h1>
+          <p className="text-slate-400 text-sm mt-1">Acesse para continuar.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -73,7 +67,7 @@ export const Login = () => {
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2 mt-2"
           >
-            {loading ? <Loader2 className="animate-spin" size={20} /> : 'Entrar na Mochila'}
+            {loading ? <Loader2 className="animate-spin" size={20} /> : 'Entrar'}
           </button>
         </form>
 

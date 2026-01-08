@@ -13,7 +13,7 @@ interface IOpenPosition {
   title: string;
   role: string;
   seniority: string;
-  workMode: string; // Adicionado
+  workMode: string; 
   requirements: string;
   plus: string;
 }
@@ -61,8 +61,6 @@ export const PerfilPublicoRecruiter = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 font-sans antialiased selection:bg-emerald-500/30">
       <Helmet><title>{`${profile?.fullName || 'Recrutador'} | Mochila.dev`}</title></Helmet>
-
-      {/* HEADER / BANNER */}
       <div className="relative h-48 md:h-64 w-full bg-slate-900 overflow-hidden">
         {profile?.bannerUrl ? (
           <img src={profile.bannerUrl} alt="Banner" className="w-full h-full object-cover opacity-60" />
@@ -74,8 +72,6 @@ export const PerfilPublicoRecruiter = () => {
 
       <main className="max-w-6xl mx-auto px-6 pb-24">
         <div className="flex flex-col lg:flex-row gap-10 -mt-24 relative z-10">
-          
-          {/* SIDEBAR */}
           <aside className="lg:w-72 flex-shrink-0">
             <div className="space-y-6">
               <div className="relative inline-block p-1 bg-slate-800 rounded-sm shadow-2xl">
@@ -125,11 +121,7 @@ export const PerfilPublicoRecruiter = () => {
               )}
             </div>
           </aside>
-
-          {/* CONTEÚDO PRINCIPAL */}
           <section className="flex-1 lg:mt-24 space-y-12">
-            
-            {/* STATS */}
             <div className="grid grid-cols-2 md:grid-cols-4 bg-slate-900/40 border border-slate-800 rounded-sm divide-x divide-slate-800 shadow-sm">
               {[
                 { label: 'Hires', val: profile?.hiringStats_count, icon: Users },
@@ -177,8 +169,6 @@ export const PerfilPublicoRecruiter = () => {
                 </div>
               </div>
             </div>
-
-            {/* VAGAS ATIVAS */}
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-emerald-500 flex items-center gap-2">
@@ -196,7 +186,6 @@ export const PerfilPublicoRecruiter = () => {
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-[10px] font-mono text-emerald-500/80 uppercase tracking-tight">{job.role}</span>
                             <span className="text-slate-700 text-[10px]">•</span>
-                            {/* NOVA BADGE DE MODALIDADE */}
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
                                 <Layout size={10} className="text-slate-600" /> {job.workMode || 'Remoto'}
                             </span>
@@ -246,8 +235,6 @@ export const PerfilPublicoRecruiter = () => {
                 )}
               </div>
             </div>
-
-            {/* FOOTER DO PERFIL */}
             <div className="grid md:grid-cols-2 gap-12 pt-8 border-t border-slate-900">
               <div className="space-y-4">
                 <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Tech Stack de Interesse</h4>
